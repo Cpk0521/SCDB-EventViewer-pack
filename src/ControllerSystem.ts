@@ -14,7 +14,11 @@ export class ControllerSystem {
     public add<C extends IController>(name : string, Class : ControllerClass<C>, order? : number){
 
         if(this.allcontroller.has(name)){
-            return this.allcontroller.get(name) as C
+            let controller = this.allcontroller.get(name) as C
+            if(order && controller instanceof Container){
+                controller.zIndex = order
+            }
+            return controller
         }
     
         const controller = new Class()
@@ -22,12 +26,12 @@ export class ControllerSystem {
         if('setting' in controller){
             controller.setting = this._viewer.config
         }
-
+        
         if(controller instanceof Container){
             controller.addTo?.(this._viewer);
             controller.zIndex = order ?? 0
         }
-
+        
         this.allcontroller.set(name, controller)
         
         return controller as C

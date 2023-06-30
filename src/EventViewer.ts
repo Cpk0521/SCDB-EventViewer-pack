@@ -7,7 +7,7 @@ import '@pixi/sound';
 import '@pixi-spine/loader-uni'
 import { ConfigSetting } from './ConfigSetting';
 import { Helper } from './Helper';
-import { hello } from "./utils/hello";
+import { Hello, TrackLog } from './utils/log';
 import { updateConfig } from './utils/updateSetting';
 import { Mp4Assets } from './utils/mp4assets';
 import { createEmptySprite } from './utils/emptySprite';
@@ -72,7 +72,7 @@ export class EventViewer extends Container{
         
         extensions.add(Mp4Assets); //增加mp4擴充 for PIXI.Assets
 
-        if(this.setting.hello) {hello();}
+        if(this.setting.hello) {Hello();}
     }
 
     public static new(setting? : Partial<IEventViewerOptions>){
@@ -319,7 +319,7 @@ export class EventViewer extends Container{
         if(!this._track) { return; }
         if (this._stopped || this._selecting) { return; }
         if(this.config.infoLog){
-            console.log(`%c%s%c%s%c%s`, 'color:white;background:#23c4ed', `[INFO]`, '',' ', 'color:#23c4ed', `[${this._current}/${this._track.length - 1}]`, this.currentTrack)
+            TrackLog(this._current, this._track.length - 1, this.currentTrack);
         }
 
         if (this.currentTrack.label == "end") {
