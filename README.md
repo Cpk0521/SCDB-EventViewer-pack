@@ -41,9 +41,9 @@ const viewer = new SCDB.EventViewer();
 /**
  * add the viewer to app stage
  * same as
- * app.stage.addChild(viewer);
+ * pixiapp.stage.addChild(viewer);
 */
-viewer.addTo(app.stage)
+viewer.addTo(pixiapp.stage)
 
 
 // const url = await SCDB.Helper.searchFromMasterList('produce_events/202100711.json');
