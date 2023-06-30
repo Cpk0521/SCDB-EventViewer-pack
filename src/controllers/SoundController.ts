@@ -61,19 +61,23 @@ export class SoundController implements IController{
         if (bgmName == "off") { return; }
 
         this._currentBgm = Assets.get(`bgm_${bgmName}`);
-        this._currentBgm!.autoPlay = true;
-        this._currentBgm!.play({
-            loop: true,
-            singleInstance: true
-        });
-        this._currentBgm!.volume = 0.3;
+        if(this._currentBgm){
+            this._currentBgm.autoPlay = true;
+            this._currentBgm.play({
+                loop: true,
+                singleInstance: true
+            });
+            this._currentBgm.volume = 0.3;
+        }
     }
 
     protected _playSe(seName : string) {
         this._currentSe = Assets.get(`se_${seName}`)
-        this._currentSe!.play({
-            loop: false
-        });
+        if(this._currentSe){
+            this._currentSe.play({
+                loop: false
+            });
+        }
     }
 
     protected _playVoice(voiceName: string, charLabel: string, onVoiceEnd : Function){
@@ -83,19 +87,22 @@ export class SoundController implements IController{
             this._onVoiceEnd();
         }
 
-        this._currentVoice = Assets.get(`voice_${voiceName}`)!
-        let instance = this._currentVoice!.play({
-            loop: false
-        });
+        this._currentVoice = Assets.get(`voice_${voiceName}`)
+        // console.log(this._currentVoice)
+        if(this._currentVoice){
+            let instance = this._currentVoice.play({
+                loop: false
+            });
+            
+            this._voiceDuration = (this._currentVoice.duration) * 1000 + 1000;
+            this._onVoiceEnd = () => {
+                onVoiceEnd(charLabel);
+            };
 
-        this._voiceDuration = (this._currentVoice!.duration) * 1000 + 1000;
-        this._onVoiceEnd = () => {
-            onVoiceEnd(charLabel);
-        };
-
-        (instance as IMediaInstance).on('end', () => {
-            this._onVoiceEnd();
-        });
+            (instance as IMediaInstance).on('end', () => {
+                this._onVoiceEnd();
+            });
+        }
     }
 
     get voiceDuration() {
