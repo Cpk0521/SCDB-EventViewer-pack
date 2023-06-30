@@ -38,7 +38,7 @@ export class EventViewer extends Container{
     protected _bgController! : BGController;
     protected _fgController! : FGController;
     protected _spineController! : SpineController;
-    protected _textController! : TextController;
+    protected _textController! : TextController; 
     protected _selectController! : SelectController;
     protected _soundController! : SoundController;
     protected _effectController! : EffectController;
@@ -94,14 +94,14 @@ export class EventViewer extends Container{
 
     public async init(){
         this._bgController = this.system.add('bg', BGController, 1);
-        this._spineController =  this.system.add('spine', SpineController, 2);
-        this._fgController = this.system.add('fg', FGController, 3)
-        this._stillController = this.system.add('still', StillController, 4)
-        this._textController = this.system.add('text', TextController, 5)
-        this._selectController = this.system.add('select', SelectController, 6)
-        this._effectController = this.system.add('effect', EffectController, 7)
-        this._movieController = this.system.add('movie', MovieController, 8)
-        this._soundController = this.system.add('sound', SoundController)
+        this._spineController =  this.system.add('spine', SpineController, 2); //
+        this._fgController = this.system.add('fg', FGController, 3);
+        this._stillController = this.system.add('still', StillController, 4);
+        this._textController = this.system.add('text', TextController, 5); //
+        this._selectController = this.system.add('select', SelectController, 6); //
+        this._effectController = this.system.add('effect', EffectController, 7);
+        this._movieController = this.system.add('movie', MovieController, 8);
+        this._soundController = this.system.add('sound', SoundController); //
 
         //load require assets and fonts file
         let fontassets : Record<string, string> = {}
@@ -327,23 +327,16 @@ export class EventViewer extends Container{
             return;
         }
 
-        const { speaker, text, textCtrl, textFrame,
-            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
-            charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime, translate_text} = this.currentTrack;
+        const { text, textCtrl, voice, select, nextLabel, movie, effectValue, waitType, waitTime, translate_text} = this.currentTrack;
 
-        this._bgController.process(bg!, bgEffect!, bgEffectTime!);
-        this._fgController.process(fg!, fgEffect!, fgEffectTime!);
-        this._movieController.process(movie!, this._renderTrack.bind(this));
-        this._textController.process(textFrame!, speaker!, text!, translate_text!);
-        this._selectController.process(select!, nextLabel!, this._jumpTo.bind(this), this._afterSelection.bind(this), translate_text!)
-        this._stillController.process(still!, stillType!, stillId!, stillCtrl!)
-        this._soundController.process(bgm!, se!, voice!, charLabel!, this._spineController.stopLipAnimation.bind(this._spineController));
-        this._spineController.process(charLabel!, charId!, charCategory!, charPosition!, charScale!, charAnim1!, charAnim2!, charAnim3!, charAnim4!, charAnim5!,
-            charAnim1Loop!, charAnim2Loop!, charAnim3Loop!, charAnim4Loop!, charAnim5Loop!, charLipAnim!, lipAnimDuration!, charEffect!);
-        this._effectController.process(effectLabel!, effectTarget!, effectValue!)
-        
+        const params = {...this.currentTrack, 
+            selectonClick : this._jumpTo.bind(this),
+            onMovieEnded : this._renderTrack.bind(this),
+            afterSelection : this._afterSelection.bind(this),
+            onVoiceEnd : this._spineController.stopLipAnimation.bind(this._spineController)
+        }
+        this.system.process(params);
+
         if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";
         }

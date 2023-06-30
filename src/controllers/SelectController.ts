@@ -23,7 +23,7 @@ export class SelectController extends Container implements IController {
         this._stMap.clear();
     }
 
-    public process(selectDesc: string, nextLabel: string, onClick:Function, afterSelection:Function, translated_text?:string): void {
+    public process(selectDesc: string, nextLabel: string, selectonClick:Function, afterSelection:Function, translated_text?:string): void {
         if (!selectDesc) return;
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
@@ -46,7 +46,7 @@ export class SelectController extends Container implements IController {
             gsap.to(thisSelectContainer, { pixi: { scaleX: 1.2, scaleY: 1.2 } , duration: 0.1})
 
             setTimeout(() => {
-                onClick(nextLabel);
+                selectonClick(nextLabel);
                 afterSelection();
 
                 this._fadeOutOption();
