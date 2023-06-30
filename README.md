@@ -3,11 +3,10 @@
 ![Spine version](https://img.shields.io/badge/Spine-3.6%20/%203.7-ff69b4?style=flat-square)
 
 [ShinyColorsDB-EventViewer](https://github.com/ShinyColorsDB/ShinyColorsDB-EventViewer) typescript version
- 
+
 A simple viewer that renders shinycolors events
 
 ## Requirements
--   Browser : WebGL, ES6
 -   PixiJS : >7
 -   GSAP : >3
 -   pixi-spine : >4
@@ -16,7 +15,7 @@ A simple viewer that renders shinycolors events
 ## Basic usage
 
 ```html
-<script src="https://pixijs.download/v7.2.0/pixi.js"></script>
+<script src="https://pixijs.download/v7.2.4/pixi.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@pixi/sound@5.2.0/dist/pixi-sound.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pixi-spine@4.0.4/dist/pixi-spine.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/gsap.min.js"></script>
