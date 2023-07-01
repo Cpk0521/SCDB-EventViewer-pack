@@ -46,5 +46,3 @@ await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColor
 // await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
 // viewer.start();
 viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-
-

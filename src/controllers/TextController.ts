@@ -60,43 +60,46 @@ export class TextController extends Container implements IController {
             speakerObj.position.set(260, 468);
         }
 
-        if (translated_text) {
-            this._currentText.jp = text;
-            this._currentText.translated = translated_text;
-            text = this._currentText[this._language]
-        }
-
-        this._textObj = new Text('', {
-            align: "left",
-            fontFamily: this.options?.fonts[this._language].family!,
-            fontSize: 24,
-            padding: 3
-        });
-        this.addChildAt(this._textObj, noSpeaker ? 1 : 2);
-        this._textObj.position.set(240, 510);
-
-        let word_index = 0;
-        if (this._typingEffect != null) {
-            clearInterval(this._typingEffect);
-        }
-
-        // if (isFastForward) {
-        //     this._textObj.text = text;
-        // }
-        // else {
-        this._typingEffect = setInterval(() => {
-            if (word_index === text.length) {
-                clearInterval(this._typingEffect!);
-                // managerSound.stop()
-                this._typingEffect = null;
+        if(text){
+            if (translated_text) {
+                this._currentText.jp = text;
+                this._currentText.translated = translated_text;
+                text = this._currentText[this._language]
             }
-            // if(!noSpeaker && speaker == 'プロデューサー'){
-            //     managerSound.play()
+    
+            this._textObj = new Text('', {
+                align: "left",
+                fontFamily: this.options?.fonts[this._language].family!,
+                fontSize: 24,
+                padding: 3
+            });
+            this.addChildAt(this._textObj, noSpeaker ? 1 : 2);
+            this._textObj.position.set(240, 510);
+    
+            let word_index = 0;
+            if (this._typingEffect != null) {
+                clearInterval(this._typingEffect);
+            }
+    
+            // if (isFastForward) {
+            //     this._textObj.text = text;
             // }
-            this._textObj.text += text.charAt(word_index);
-            word_index += 1;
-        }, 65);
-        // }
+            // else {
+            this._typingEffect = setInterval(() => {
+                if (word_index === text?.length) {
+                    clearInterval(this._typingEffect!);
+                    // managerSound.stop()
+                    this._typingEffect = null;
+                }
+                // if(!noSpeaker && speaker == 'プロデューサー'){
+                //     managerSound.play()
+                // }
+                this._textObj.text += text.charAt(word_index);
+                word_index += 1;
+            }, 65);
+            // }
+        }
+
     }
 
     public toggleLanguage(lang : string) {

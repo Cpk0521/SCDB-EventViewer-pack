@@ -5,7 +5,6 @@ import dts from 'vite-plugin-dts'
 import banner from 'vite-plugin-banner'
 import pkg from './package.json'
 
-
 export default defineConfig({
     define: {
         __VERSION__: JSON.stringify(require('./package.json').version),
@@ -19,7 +18,7 @@ export default defineConfig({
         open: '/playground/index.html',
     },
     build: {
-        target: 'esnext',
+        target: 'es6',
         minify: false,
         lib: {
             // entry: path.resolve(__dirname, 'src/index.ts'),
@@ -56,6 +55,14 @@ export default defineConfig({
 //     const isDev = command === 'serve';
 
 //     return {
+//         plugins: [
+//             dts({
+//                 insertTypesEntry : true,
+//             }),
+//             banner(
+//                 `/**\n * name: ${pkg.name}\n * version: ${pkg.version}\n * author: ${pkg.author}\n */`
+//             )
+//         ],
 //         define: {
 //             __DEV__: isDev,
 //             __VERSION__: JSON.stringify(require('./package.json').version),
@@ -65,11 +72,14 @@ export default defineConfig({
 //                 '@': path.resolve(__dirname, 'src'),
 //             },
 //         },
+//         server: {
+//             open: '/playground/index.html',
+//         },
 //         build: {
 //             target: 'es6',
 //             lib: {
-//                 entry: '',//path.resolve(__dirname, 'src/index.ts')
-//                 // entry: path.resolve(__dirname, 'src/index.ts'),
+//                 // entry: '',
+//                 entry: path.resolve(__dirname, 'src/index.ts'),
 //                 name: 'SCDB',
 //             },
 //             rollupOptions: {
