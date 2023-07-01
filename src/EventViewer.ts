@@ -35,17 +35,8 @@ export class EventViewer extends Container{
     protected setting : IEventViewerOptions = ConfigSetting;
     //Controller
     protected system : ControllerSystem;
-    protected _bgController! : BGController;
-    protected _fgController! : FGController;
-    protected _spineController! : SpineController;
-    protected _textController! : TextController; 
-    protected _selectController! : SelectController;
-    protected _soundController! : SoundController;
-    protected _effectController! : EffectController;
-    protected _movieController! : MovieController;
-    protected _stillController! : StillController;
     //Track
-    protected _track! : TrackFrames[];
+    protected _track : TrackFrames[] = [];
     protected _autoPlayEnabled : boolean = true;
     protected _current : number = 0;
     protected _nextLabel : string | undefined | null;
@@ -84,24 +75,25 @@ export class EventViewer extends Container{
         return this;
     }
 
-    public destroy() {
+    public async destroy() {
         this._track = [];
         this._current = 0;
         this._nextLabel = null;
         this._stopTrackIndex = -1;
-        Assets.unloadBundle(['TrackBundle', 'fonts', 'require_assets']);
+        await Assets.unloadBundle(['TrackBundle', 'fonts', 'require_assets']);
     }
 
     public async init(){
-        this._bgController = this.system.add('bg', BGController, 1);
-        this._spineController =  this.system.add('spine', SpineController, 2); //
-        this._fgController = this.system.add('fg', FGController, 3);
-        this._stillController = this.system.add('still', StillController, 4);
-        this._textController = this.system.add('text', TextController, 5); //
-        this._selectController = this.system.add('select', SelectController, 6); //
-        this._effectController = this.system.add('effect', EffectController, 7);
-        this._movieController = this.system.add('movie', MovieController, 8);
-        this._soundController = this.system.add('sound', SoundController); //
+
+        this.system.add('bg', BGController, 1);
+        this.system.add('spine', SpineController, 2);
+        this.system.add('fg', FGController, 3);
+        this.system.add('still', StillController, 4);
+        this.system.add('text', TextController, 5);
+        this.system.add('select', SelectController, 6);
+        this.system.add('effect', EffectController, 7);
+        this.system.add('movie', MovieController, 8);
+        this.system.add('sound', SoundController);
 
         //load require assets and fonts file
         let fontassets : Record<string, string> = {}
@@ -129,7 +121,10 @@ export class EventViewer extends Container{
             source = await Helper.loadJson<TrackFrames[]>(source);
         }
 
-        // init
+        //init
+        // if(this._track.length){
+        //     await this.destroy()
+        // }
         await this.init();
         
         //load all assets resources
@@ -173,9 +168,9 @@ export class EventViewer extends Container{
                     resources[`${charLabel}_${charId}_${thisCharCategory}`] = `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`;
                 }
             }
-            if (select && !resources[`selectFrame_${this._selectController.neededFrame}`]) {
-                resources[`selectFrame_${this._selectController.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this._selectController.neededFrame}.png`;
-                this._selectController.frameForward();
+            if (select && !resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`]) {
+                resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this.system.get(SelectController)?.neededFrame}.png`;
+                this.system.get(SelectController)?.frameForward();
                 if (!this._mixed && this._translationData) {
                     Frame['translate_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
                 }
@@ -311,8 +306,8 @@ export class EventViewer extends Container{
         this._language = texture[index][0];
         switchLangBtn.texture = texture[index][1];
 
-        this._selectController.toggleLanguage(this._language);
-        this._textController.toggleLanguage(this._language);
+        this.system.get(SelectController)?.toggleLanguage(this._language);
+        this.system.get(TextController)?.toggleLanguage(this._language);
     }
     
     protected _renderTrack(){
@@ -327,13 +322,13 @@ export class EventViewer extends Container{
             return;
         }
 
-        const { text, textCtrl, voice, select, nextLabel, movie, effectValue, waitType, waitTime, translate_text} = this.currentTrack;
+        const { text, textCtrl, voice, select, nextLabel, movie, effectValue, waitType, waitTime } = this.currentTrack;
 
         const params = {...this.currentTrack, 
             selectonClick : this._jumpTo.bind(this),
             onMovieEnded : this._renderTrack.bind(this),
             afterSelection : this._afterSelection.bind(this),
-            onVoiceEnd : this._spineController.stopLipAnimation.bind(this._spineController)
+            onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
         }
         this.system.process(params);
 
@@ -356,9 +351,9 @@ export class EventViewer extends Container{
             this._selecting = true;
         }
         else if (text && this._autoPlayEnabled && !waitType) {
-            this._textTypingEffect = this._textController.typingEffect;
+            this._textTypingEffect = this.system.get(TextController).typingEffect;
             if (voice) { // here to add autoplay for both text and voice condition
-                const voiceTimeout = this._soundController.voiceDuration;
+                const voiceTimeout = this.system.get(SoundController).voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
@@ -366,7 +361,8 @@ export class EventViewer extends Container{
                 }, voiceTimeout);
             }
             else { // here to add autoplay for only text condition
-                const textTimeout = this._textController.textWaitTime;
+                // const textTimeout = this._textController.textWaitTime;
+                const textTimeout = this.system.get(TextController).textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();

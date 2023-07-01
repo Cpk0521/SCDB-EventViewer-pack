@@ -56,7 +56,7 @@ export class ControllerSystem {
     }
 
     public get<C extends IController>(Class : ControllerClass<C>){
-        return [...this.allcontroller].find(([_, val]) => val.CClass instanceof Class)?.[1].CClass
+        return [...this.allcontroller].find(([_, val]) => val.CClass instanceof Class)?.[1].CClass as C
     }
     
     public getByName<C extends IController>(name : string){
