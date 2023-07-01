@@ -1,6 +1,6 @@
 {
   "name": "scdb-eventviewer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A self made event viewer to render events in game",
   "author": "ShinyColorsDB",
   "license": "MIT",
