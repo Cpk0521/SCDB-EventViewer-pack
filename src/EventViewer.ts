@@ -44,6 +44,15 @@ export class EventViewer extends Container{
     //Controller
     protected system : ControllerSystem;
     protected _oninit : boolean = false;
+    protected _bgController! : BGController;
+    protected _fgController! : FGController;
+    protected _spineController! : SpineController;
+    protected _textController! : TextController;
+    protected _selectController! : SelectController;
+    protected _soundController! : SoundController;
+    protected _effectController! : EffectController;
+    protected _movieController! : MovieController;
+    protected _stillController! : StillController;
     //Track
     protected _track : TrackFrames[] = [];
     protected _autoPlayEnabled : boolean = true;
@@ -94,15 +103,15 @@ export class EventViewer extends Container{
 
     public async init(){
 
-        this.system.add('bg', BGController, 1);
-        this.system.add('spine', SpineController, 2);
-        this.system.add('fg', FGController, 3);
-        this.system.add('still', StillController, 4);
-        this.system.add('text', TextController, 5);
-        this.system.add('select', SelectController, 6);
-        this.system.add('effect', EffectController, 7);
-        this.system.add('movie', MovieController, 8);
-        this.system.add('sound', SoundController);
+        this._bgController = this.system.add('bg', BGController, 1);
+        this._spineController =  this.system.add('spine', SpineController, 2);
+        this._fgController = this.system.add('fg', FGController, 3)
+        this._stillController = this.system.add('still', StillController, 4)
+        this._textController = this.system.add('text', TextController, 5)
+        this._selectController = this.system.add('select', SelectController, 6)
+        this._effectController = this.system.add('effect', EffectController, 7)
+        this._movieController = this.system.add('movie', MovieController, 8)
+        this._soundController = this.system.add('sound', SoundController)
 
         //load require assets and fonts file
         let fontassets : Record<string, string> = {}
@@ -182,9 +191,9 @@ export class EventViewer extends Container{
                     resources[`${charLabel}_${charId}_${thisCharCategory}`] = `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`;
                 }
             }
-            if (select && !resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`]) {
-                resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this.system.get(SelectController)?.neededFrame}.png`;
-                this.system.get(SelectController)?.frameForward();
+            if (select && !resources[`selectFrame_${this._selectController.neededFrame}`]) {
+                resources[`selectFrame_${this._selectController.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this._selectController.neededFrame}.png`;
+                this._selectController.frameForward();
                 if (!this._mixed && this._translationData) {
                     Frame['translated_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
                 }
@@ -325,8 +334,8 @@ export class EventViewer extends Container{
         this._language = states[(index + 1) % states.length] as translateState
         switchLangBtn.texture = SwitchLangBtn_texture[arr[index]]
 
-        this.system.get(SelectController)?.toggleLanguage(this._language as string);
-        this.system.get(TextController)?.toggleLanguage(this._language as string);
+        this._selectController.toggleLanguage(this._language as string);
+        this._textController.toggleLanguage(this._language as string);
     }
     
     protected _renderTrack(){
@@ -341,15 +350,34 @@ export class EventViewer extends Container{
             return;
         }
 
-        const { text, textCtrl, voice, select, nextLabel, effectValue, waitType, waitTime } = this.currentTrack;
+        // const { text, textCtrl, voice, select, nextLabel, effectValue, waitType, waitTime } = this.currentTrack;
 
-        const params = {...this.currentTrack, 
-            selectonClick : this._jumpTo.bind(this),
-            onMovieEnded : this._renderTrack.bind(this),
-            afterSelection : this._afterSelection.bind(this),
-            onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
-        }
-        this.system.process(params);
+        // const params = {...this.currentTrack, 
+        //     selectonClick : this._jumpTo.bind(this),
+        //     onMovieEnded : this._renderTrack.bind(this),
+        //     afterSelection : this._afterSelection.bind(this),
+        //     onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
+        // }
+
+        // this.system.process(params);
+
+        const { speaker, text, textCtrl, textFrame,
+            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
+            charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
+            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
+            effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text} = this.currentTrack;
+
+        this._bgController.process(bg!, bgEffect!, bgEffectTime!);
+        this._fgController.process(fg!, fgEffect!, fgEffectTime!);
+        this._movieController.process(movie!, this._renderTrack.bind(this));
+        this._textController.process(textFrame!, speaker!, text!, translated_text!);
+        this._selectController.process(select!, nextLabel!, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text!)
+        this._stillController.process(still!, stillType!, stillId!, stillCtrl!)
+        this._soundController.process(bgm!, se!, voice!, charLabel!, this._spineController.stopLipAnimation.bind(this._spineController));
+        this._spineController.process(charLabel!, charId!, charCategory!, charPosition!, charScale!, charAnim1!, charAnim2!, charAnim3!, charAnim4!, charAnim5!,
+            charAnim1Loop!, charAnim2Loop!, charAnim3Loop!, charAnim4Loop!, charAnim5Loop!, charLipAnim!, lipAnimDuration!, charEffect!);
+        this._effectController.process(effectLabel!, effectTarget!, effectValue!)
+
 
         if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";
@@ -368,10 +396,10 @@ export class EventViewer extends Container{
             this._selecting = true;
         }
         else if (text && this._autoPlayEnabled && !waitType) {
-            this._textTypingEffect = this.system.get(TextController).typingEffect;
+            this._textTypingEffect = this._textController.typingEffect;
             if (voice) { 
                 // here to add autoplay for both text and voice condition
-                const voiceTimeout = this.system.get(SoundController).voiceDuration;
+                const voiceTimeout = this._soundController.voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
@@ -380,7 +408,7 @@ export class EventViewer extends Container{
             }
             else { 
                 // here to add autoplay for only text condition
-                const textTimeout = this.system.get(TextController).textWaitTime;
+                const textTimeout = this._textController.textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
