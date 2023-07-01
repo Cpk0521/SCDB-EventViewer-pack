@@ -8,7 +8,7 @@ export class BGController extends Container implements IController {
 
     protected readonly _bgMap : Map<string, Sprite> = new Map();
 
-    public process(bg : string, bgEffect: string, bgEffectTime: number, isFastForward?: boolean): void {
+    public process(bg : string, bgEffect: string, bgEffectTime: number): void {
         if (bg && bgEffect) {
             // if (isFastForward) {
             //     this._insertNewBg(bg, 1, true);

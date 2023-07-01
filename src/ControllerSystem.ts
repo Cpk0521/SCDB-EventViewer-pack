@@ -36,8 +36,8 @@ export class ControllerSystem {
             argNames : [] as string[]
         }
         
-        if('setting' in controller){
-            controller.setting = this._viewer.config
+        if('options' in controller){
+            controller.options = this._viewer.Options
         }
         
         if(controller instanceof Container){

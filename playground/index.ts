@@ -40,11 +40,14 @@ const app = createApp();
 const viewer = new SCDB.EventViewer();
 app.stage.addChild(viewer);
 
-// const url = await SCDB.Helper.searchFromMasterList('produce_events/202100711.json');
-// const csv = await SCDB.Helper.loadCSV(url)
-// const data = SCDB.Helper.CSVToJSON(csv)
+// viewer.init()
 
-// await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json')
-// await viewer.loadTranslateData(url);
-viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json')
-// viewer.start()
+// await viewer.searchAndLoadTranslation('produce_events/202100711.json');
+// await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+// viewer.start();
+// https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv
+await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
+await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+viewer.start();
+// viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+

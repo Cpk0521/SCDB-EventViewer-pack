@@ -1,11 +1,11 @@
-type ISetting = {
-    hello : boolean,
+interface IViewerOptions {
+    hello : boolean;
     infoLog : boolean,
-    assetUrl : string,
+    resourceUrl : string,
     fonts : {
-        zh : FontSetting,
         jp : FontSetting,
-        [language : string] : FontSetting,
+        translated : FontSetting,
+        [key: string]: FontSetting;
     },
     translate : {
         master_list : string,
@@ -13,11 +13,14 @@ type ISetting = {
     },
     assets : {
         touchToStart : string,
-        autoOn : string,
-        autoOff : string,
-        jpON : string,
-        zhOn : string,
-        [item : string] : string,
+        autoBtn : {
+            On : string,
+            Off : string
+        },
+        translationBtn : {
+            On : string,
+            Off : string
+        }
     }
 }
 

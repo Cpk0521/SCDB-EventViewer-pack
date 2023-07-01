@@ -6,13 +6,13 @@ import { IController } from '../types/controller'
 
 export class TextController extends Container implements IController {
 
-    public setting : ISetting | undefined = undefined;
+    public options : IViewerOptions | undefined = undefined;
     protected readonly _txtFrameMap = new Map();
     protected _thisWaitTime : number = 0;
     protected _typingEffect : number | NodeJS.Timer | null | undefined = null;
     protected _textObj! : Text;
     protected _language : string = 'jp';
-    protected _currentText : Record<string, string> = { jp: '', zh: '' };
+    protected _currentText : TextRecord = { jp: '', translated: '' };
 
     public addTo<C extends Container>(parent : C): this {
         parent.addChild(this);
@@ -25,7 +25,7 @@ export class TextController extends Container implements IController {
         this._endNotification();
     }
 
-    public process(textFrame: string, speaker: string, text: string, translated_text? : string, isFastForward? : boolean){
+    public process(textFrame: string, speaker: string, text: string, translated_text? : string){
         this._thisWaitTime = 0;
 
         if (!textFrame || (textFrame == "off" && !this.children.length)) { return; }
@@ -50,7 +50,7 @@ export class TextController extends Container implements IController {
         if (speaker !== "off") {
             noSpeaker = false;
             let speakerObj = new Text(speaker, {
-                fontFamily: this.setting?.fonts[this._language].family,
+                fontFamily: this.options?.fonts['jp'].family,
                 fontSize: 24,
                 fill: 0x000000,
                 align: 'center',
@@ -62,22 +62,13 @@ export class TextController extends Container implements IController {
 
         if (translated_text) {
             this._currentText.jp = text;
-            this._currentText.zh = translated_text;
-            // text = this._languageType === 1 ? translated_text : text;
+            this._currentText.translated = translated_text;
             text = this._currentText[this._language]
         }
 
-        // let family = translated_text && this._languageType === 1 ? zhcnFont : usedFont;
-        // const textStyle = new TextStyle({
-        //     align: "left",
-        //     fontFamily: this.setting?.fonts[this._language].family,
-        //     fontSize: 24,
-        //     padding: 3
-        // });
-
         this._textObj = new Text('', {
             align: "left",
-            fontFamily: this.setting?.fonts[this._language].family!,
+            fontFamily: this.options?.fonts[this._language].family!,
             fontSize: 24,
             padding: 3
         });
@@ -116,15 +107,15 @@ export class TextController extends Container implements IController {
             this._typingEffect = null;
         }
 
-        if (this._textObj) {
+        if (this._textObj) {            
             this._textObj.text = this._currentText[this._language];
-            this._textObj.style.fontFamily = this.setting!.fonts[this._language].family || '';
+            this._textObj.style.fontFamily = this.options!.fonts[this._language].family || '';
         }
     }
 
     _endNotification() {
         let owariObj = new Text("End", {
-            fontFamily: this.setting?.fonts.zh.family,
+            fontFamily: this.options?.fonts.zh.family,
             fontSize: 40,
             fill: 0xffffff,
             align: 'center'

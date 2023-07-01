@@ -12,5 +12,14 @@ type translateTable = {
 }
 
 type translateText = {
-    translate_text? : string
+    translated_text? : string
 }
+
+type TextRecord = {
+    jp: string
+    translated: string
+    [label : string] : string
+}
+
+
+

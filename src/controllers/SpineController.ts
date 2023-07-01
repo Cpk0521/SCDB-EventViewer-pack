@@ -62,7 +62,7 @@ export class SpineController extends Container implements IController {
         charScale:number, charAnim1:string, charAnim2:string, charAnim3:string, 
         charAnim4:string, charAnim5:string, charAnim1Loop:boolean, charAnim2Loop:boolean, 
         charAnim3Loop:boolean, charAnim4Loop:boolean, charAnim5Loop:boolean, charLipAnim:string|boolean, 
-        lipAnimDuration:number, charEffect:Optional<CharEffect>, isFastForward?:boolean)
+        lipAnimDuration:number, charEffect:Optional<CharEffect>)
     {
         if (!charLabel) { return; }
         if (charId) {
@@ -131,7 +131,7 @@ export class SpineController extends Container implements IController {
             this._setCharacterAnimation(charAnim5, charAnim5Loop, TRACK_INDEXES.ANIM5, thisSpine!);
         }
 
-        if (charLipAnim && !isFastForward) {
+        if (charLipAnim) { //&& !isFastForward
             const trackEntry = this._setCharacterAnimation(charLipAnim as string, true, TRACK_INDEXES.LIP_ANIM, thisSpine!);
             if (lipAnimDuration && trackEntry) {
                 this._timeoutToClear = setTimeout(() => {

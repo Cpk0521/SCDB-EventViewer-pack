@@ -19,25 +19,17 @@ export class FGController extends Container implements IController {
         this._fgMap.clear();
     }
 
-    public process(fg: string, fgEffect: string, fgEffectTime : number, isFastForward? : boolean){
+    public process(fg: string, fgEffect: string, fgEffectTime : number){
         if (fg == "off") {
             if (this.children.length) {
                 this.removeChildren(0, this.children.length);
             }
         }
-        // else if (isFastForward) {
-        //     this._changeFg(fg, 0, 1);
-        // }
         else if (fg == "fade_out") {
             this._fadeOutFg();
         }
         else if (fg && fgEffect) {
-            if (isFastForward) {
-                this._changeFg(fg, 0, 1);
-            }
-            else {
-                this._changeFgByEffect(fg, fgEffect, fgEffectTime);
-            }
+            this._changeFgByEffect(fg, fgEffect, fgEffectTime);
         }
         else if (fg && !fgEffect) {
             this._changeFg(fg, 0, 1);
