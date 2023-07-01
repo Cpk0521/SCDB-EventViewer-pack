@@ -11,7 +11,6 @@ export function Hello(){
     console.log(...log);
 }
 
-// console.log(`%c%s%c%s%c%s`, 'color:white;background:#23c4ed', `[INFO]`, '',' ', 'color:#23c4ed', `[${this._current}/${this._track.length - 1}]`, this.currentTrack)
 export function TrackLog(current : number, length : number, Track : object){
     const log = [
         '%c%s%c%s%c%s',

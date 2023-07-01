@@ -34,8 +34,7 @@ export class SoundController implements IController{
         }
     }
 
-    public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function, isFastForward?: boolean): void {
-        // if (isFastForward) { return; }
+    public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function): void {
         if (bgm) {
             this._playBgm(bgm);
         }

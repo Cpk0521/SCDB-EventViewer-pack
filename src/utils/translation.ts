@@ -1,24 +1,23 @@
-import { Helper } from "..";
-
-let translate_CSV_url = 'https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/{uid}.csv';
-let master_list = 'https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/story.json';
-
 // searchFromMasterList -> getCSVUrl => fetch => CSVToJSON
+import { loadJson } from "./loadJson";
 
-export async function searchFromMasterList(jsonPath : string){
-    let masterlist = await Helper.loadJson<string[][]>(master_list)
-    return getCSVUrl(masterlist, jsonPath);
-}
-
-function getCSVUrl(masterlist: string[][], jsonPath : string) {
+export async function searchFromMasterList(
+    tag : string,
+    master_list : string,
+    translate_CSV_url : string
+) {
     let translateUrl : string | undefined;
-    masterlist.forEach(([key, hash]) => {
-        if (key === jsonPath){
-            translateUrl = translate_CSV_url.replace('{uid}', hash);
-        }
-    })
+    let list = await loadJson<string[][]>(master_list)
+    if(list){
+        list.forEach(([key, hash]) => {
+            if (key === tag){
+                translateUrl = translate_CSV_url.replace('{uid}', hash);
+            }
+        })
+    }
+
     return translateUrl
-};
+}
 
 export function CSVToJSON(csvtext : string) {
     const data : TranslateData = {

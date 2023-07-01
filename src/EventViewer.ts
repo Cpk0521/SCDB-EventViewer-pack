@@ -5,10 +5,10 @@ import { Texture, extensions } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import '@pixi/sound';
 import '@pixi-spine/loader-uni'
-import { ConfigSetting } from './ConfigSetting';
-import { Helper } from './Helper';
+import { loadJson, loadCSVText } from './utils/loadJson';
+import { CSVToJSON, searchFromMasterList } from './utils/translation';
 import { Hello, TrackLog } from './utils/log';
-import { updateConfig } from './utils/updateSetting';
+import { updateConfig, flatten } from './utils/updateSetting';
 import { Mp4Assets } from './utils/mp4assets';
 import { createEmptySprite } from './utils/emptySprite';
 import { ControllerSystem } from './ControllerSystem';
@@ -22,7 +22,10 @@ import { SpineController, spineAlias } from './controllers/SpineController';
 import { StillController } from './controllers/StillController';
 import { TextController } from './controllers/TextController';
 
-interface IEventViewerOptions extends ISetting {}
+import { Options } from './ViewerOptions'
+
+interface IEventViewerOptions extends IViewerOptions {}
+
 type TrackFrames = FrameData & translateText;
 
 const interestedEvents : (keyof DisplayObjectEvents)[] = ['click', 'touchstart'];
@@ -30,22 +33,19 @@ const Menu : Record<string, Sprite> = {}
 const AutoBtn_texture : Record<string, Texture> = {}
 const SwitchLangBtn_texture : Record<string, Texture> = {}
 
+enum translateState {
+    ON = 'translated',
+    OFF = 'jp'
+}
+
 export class EventViewer extends Container{
 
-    protected setting : IEventViewerOptions = ConfigSetting;
+    protected _options : IEventViewerOptions = Options;
     //Controller
     protected system : ControllerSystem;
-    protected _bgController! : BGController;
-    protected _fgController! : FGController;
-    protected _spineController! : SpineController;
-    protected _textController! : TextController;
-    protected _selectController! : SelectController;
-    protected _soundController! : SoundController;
-    protected _effectController! : EffectController;
-    protected _movieController! : MovieController;
-    protected _stillController! : StillController;
+    protected _oninit : boolean = false;
     //Track
-    protected _track! : TrackFrames[];
+    protected _track : TrackFrames[] = [];
     protected _autoPlayEnabled : boolean = true;
     protected _current : number = 0;
     protected _nextLabel : string | undefined | null;
@@ -56,11 +56,11 @@ export class EventViewer extends Container{
     protected _selecting : boolean = false;
     // translation
     protected _translate : boolean = false;
-    protected _language : string = 'jp';
+    protected _language : translateState = translateState.OFF;
     protected _translationData : TranslateData | undefined | null;
     protected _mixed : boolean = false
 
-    constructor(setting? : Partial<IEventViewerOptions>){
+    constructor(options? : Partial<IEventViewerOptions>){
         super();
         
         this.addChild(createEmptySprite({color : 0x000000}))
@@ -68,15 +68,15 @@ export class EventViewer extends Container{
 
         this.system = new ControllerSystem(this);
 
-        if(setting) {this.setting = updateConfig(this.setting, setting);}
+        if(options) {this._options = updateConfig(this._options, options);}
         
         extensions.add(Mp4Assets); //增加mp4擴充 for PIXI.Assets
 
-        if(this.setting.hello) {Hello();}
+        if(this._options.hello) {Hello();}
     }
 
-    public static new(setting? : Partial<IEventViewerOptions>){
-        return new this(setting);
+    public static new(options? : Partial<IEventViewerOptions>){
+        return new this(options);
     }
 
     public addTo<T extends Container>(parent : T){
@@ -84,58 +84,67 @@ export class EventViewer extends Container{
         return this;
     }
 
-    public destroy() {
+    public async clearTrack() {
         this._track = [];
         this._current = 0;
         this._nextLabel = null;
         this._stopTrackIndex = -1;
-        Assets.unloadBundle(['TrackBundle', 'fonts', 'require_assets']);
+        await Assets.unloadBundle('TrackBundle');
     }
 
     public async init(){
-        this._bgController = this.system.add('bg', BGController, 1);
-        this._spineController =  this.system.add('spine', SpineController, 2);
-        this._fgController = this.system.add('fg', FGController, 3)
-        this._stillController = this.system.add('still', StillController, 4)
-        this._textController = this.system.add('text', TextController, 5)
-        this._selectController = this.system.add('select', SelectController, 6)
-        this._effectController = this.system.add('effect', EffectController, 7)
-        this._movieController = this.system.add('movie', MovieController, 8)
-        this._soundController = this.system.add('sound', SoundController)
+
+        this.system.add('bg', BGController, 1);
+        this.system.add('spine', SpineController, 2);
+        this.system.add('fg', FGController, 3);
+        this.system.add('still', StillController, 4);
+        this.system.add('text', TextController, 5);
+        this.system.add('select', SelectController, 6);
+        this.system.add('effect', EffectController, 7);
+        this.system.add('movie', MovieController, 8);
+        this.system.add('sound', SoundController);
 
         //load require assets and fonts file
         let fontassets : Record<string, string> = {}
-        for (const key in this.setting.fonts) {
-            fontassets[key] = this.setting.fonts[key].filepath;
+        for (const key in this._options.fonts) {
+            fontassets[key] = this._options.fonts[key].filepath;
         }
+        
         Assets.addBundle('fonts', fontassets);
-        Assets.addBundle('require_assets', this.setting.assets);
+        Assets.addBundle('require_assets', flatten(this._options.assets));
 
-        let { require_assets } = await Assets.loadBundle(['fonts', 'require_assets']);
+        let { require_assets, fonts} = await Assets.loadBundle(['fonts', 'require_assets']);
 
         Menu['touchToStart'] = new Sprite(require_assets.touchToStart);
-        Menu['autoBtn'] = new Sprite(this._autoPlayEnabled ? require_assets.autoOn : require_assets.autoOff);
-        Menu['switchLangBtn'] = new Sprite(require_assets.jpON);
+        Menu['autoBtn'] = new Sprite(this._autoPlayEnabled ? require_assets.autoBtn_On : require_assets.autoBtn_Off);
+        Menu['switchLangBtn'] = new Sprite(require_assets.translationBtn_Off);
 
-        AutoBtn_texture['On'] = require_assets.autoOn;
-        AutoBtn_texture['Off'] = require_assets.autoOff;
+        AutoBtn_texture['On'] = require_assets.autoBtn_On;
+        AutoBtn_texture['Off'] = require_assets.autoBtn_Off;
 
-        SwitchLangBtn_texture['jp'] = require_assets.jpON;
-        SwitchLangBtn_texture['zh'] = require_assets.zhOn;
+        SwitchLangBtn_texture['On'] = require_assets.translationBtn_On;
+        SwitchLangBtn_texture['Off'] = require_assets.translationBtn_Off;
+
+        this._oninit = true;
     }
 
     public async loadTrack(source : string|TrackFrames[]|Object) {
         if(typeof source === 'string') {
-            source = await Helper.loadJson<TrackFrames[]>(source);
+            source = await loadJson<TrackFrames[]>(source);
         }
 
-        // init
-        await this.init();
-        
+        if(!this._oninit){
+            await this.init();
+        }
+
+        if(this._track.length){
+            await this.clearTrack()
+        }
+
         //load all assets resources
         this._track = source as TrackFrames[];
         let resources : Record<string, string> = {}
-        let assetUrl : string = this.config.assetUrl;
+        let assetUrl : string = this._options.resourceUrl;
         
         this._track.forEach((Frame : TrackFrames)=>{
             const { speaker, text, select, textFrame,
@@ -144,7 +153,7 @@ export class EventViewer extends Container{
                     stillType, stillId, still} = Frame
             
             if (speaker && text && !this._mixed && this._translationData) {
-                Frame['translate_text'] = this._translationData.table.find(data => data.name == speaker && data.text == text)!['tran'];
+                Frame['translated_text'] = this._translationData.table.find(data => data.name == speaker && data.text == text)!['tran'];
             }
             if (textFrame && textFrame != "off" && !resources[`textFrame_${textFrame}`]) {
                 resources[`textFrame_${textFrame}`] = `${assetUrl}/images/event/text_frame/${textFrame}.png`;
@@ -173,11 +182,11 @@ export class EventViewer extends Container{
                     resources[`${charLabel}_${charId}_${thisCharCategory}`] = `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`;
                 }
             }
-            if (select && !resources[`selectFrame_${this._selectController.neededFrame}`]) {
-                resources[`selectFrame_${this._selectController.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this._selectController.neededFrame}.png`;
-                this._selectController.frameForward();
+            if (select && !resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`]) {
+                resources[`selectFrame_${this.system.get(SelectController)?.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this.system.get(SelectController)?.neededFrame}.png`;
+                this.system.get(SelectController)?.frameForward();
                 if (!this._mixed && this._translationData) {
-                    Frame['translate_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
+                    Frame['translated_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
                 }
             }
             if (still && !resources[`still_${still}`] && still != "off") {
@@ -192,7 +201,7 @@ export class EventViewer extends Container{
         })
 
         if(!this._mixed && this._translate) { this._mixed = true;}
-
+        
         return await Assets.loadBundle('TrackBundle');
     }
 
@@ -200,24 +209,30 @@ export class EventViewer extends Container{
         this.loadTrack(source).then(() => { this.start(); })
     }
 
-    public async loadTranslateData(source? : string|TranslateData|object) {
+    public async searchAndLoadTranslation(tag : string){
+        let url = await searchFromMasterList(tag, this._options.translate.master_list, this._options.translate.CSV_url);
+        return await this.loadTranslation(url!);
+    }
+
+    public async loadTranslation(source : string|TranslateData|object) {
         if(typeof source === 'string') {
-            let csvtext = await Helper.loadCSV<string>(source);
-            source = Helper.CSVToJSON(csvtext);
+            let csvtext = await loadCSVText<string>(source);
+            source = CSVToJSON(csvtext);
         }
+        if(!source) { return; }
         this._translationData = source as TranslateData;
         this._translate = true;
 
         //load Translate to track
-        if(!this._mixed && this._track){
+        if(!this._mixed && this._track.length){
             this._mixed = true
             this._track.forEach((Frame : TrackFrames)=>{
                 const { speaker, text, select} = Frame
                 if (speaker && text) {
-                    Frame['translate_text'] = this._translationData!.table.find(data => data.name == speaker && data.text == text)!['tran'];
+                    Frame['translated_text'] = this._translationData!.table.find(data => data.name == speaker && data.text == text)!['tran'];
                 }
                 if (select) {
-                    Frame['translate_text'] = this._translationData!.table.find(data => data.id == 'select' && data.text == select)!['tran'];
+                    Frame['translated_text'] = this._translationData!.table.find(data => data.id == 'select' && data.text == select)!['tran'];
                 }
             })
         }
@@ -304,21 +319,20 @@ export class EventViewer extends Container{
 
     protected _toggleLangBtn(){
         let { switchLangBtn  } = Menu;
-        let texture = Object.entries(SwitchLangBtn_texture);
-        let index = texture.findIndex(o => o[0] == this._language);
-        
-        index = (index + 1) % texture.length;
-        this._language = texture[index][0];
-        switchLangBtn.texture = texture[index][1];
+        let arr = ['Off', 'On'];
+        let states = Object.values(translateState);
+        let index = states.indexOf(this._language);
+        this._language = states[(index + 1) % states.length] as translateState
+        switchLangBtn.texture = SwitchLangBtn_texture[arr[index]]
 
-        this._selectController.toggleLanguage(this._language);
-        this._textController.toggleLanguage(this._language);
+        this.system.get(SelectController)?.toggleLanguage(this._language as string);
+        this.system.get(TextController)?.toggleLanguage(this._language as string);
     }
     
     protected _renderTrack(){
         if(!this._track) { return; }
         if (this._stopped || this._selecting) { return; }
-        if(this.config.infoLog){
+        if(this._options.infoLog){
             TrackLog(this._current, this._track.length - 1, this.currentTrack);
         }
 
@@ -327,23 +341,16 @@ export class EventViewer extends Container{
             return;
         }
 
-        const { speaker, text, textCtrl, textFrame,
-            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
-            charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime, translate_text} = this.currentTrack;
+        const { text, textCtrl, voice, select, nextLabel, effectValue, waitType, waitTime } = this.currentTrack;
 
-        this._bgController.process(bg!, bgEffect!, bgEffectTime!);
-        this._fgController.process(fg!, fgEffect!, fgEffectTime!);
-        this._movieController.process(movie!, this._renderTrack.bind(this));
-        this._textController.process(textFrame!, speaker!, text!, translate_text!);
-        this._selectController.process(select!, nextLabel!, this._jumpTo.bind(this), this._afterSelection.bind(this), translate_text!)
-        this._stillController.process(still!, stillType!, stillId!, stillCtrl!)
-        this._soundController.process(bgm!, se!, voice!, charLabel!, this._spineController.stopLipAnimation.bind(this._spineController));
-        this._spineController.process(charLabel!, charId!, charCategory!, charPosition!, charScale!, charAnim1!, charAnim2!, charAnim3!, charAnim4!, charAnim5!,
-            charAnim1Loop!, charAnim2Loop!, charAnim3Loop!, charAnim4Loop!, charAnim5Loop!, charLipAnim!, lipAnimDuration!, charEffect!);
-        this._effectController.process(effectLabel!, effectTarget!, effectValue!)
-        
+        const params = {...this.currentTrack, 
+            selectonClick : this._jumpTo.bind(this),
+            onMovieEnded : this._renderTrack.bind(this),
+            afterSelection : this._afterSelection.bind(this),
+            onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
+        }
+        this.system.process(params);
+
         if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";
         }
@@ -353,27 +360,27 @@ export class EventViewer extends Container{
             return;
         }
         else if (select && !textCtrl) { // turn app.stage interactive off, in case selection is appeared on stage
-            // this._app.stage.interactive = false;
-            this.eventMode = 'auto'
+            this.eventMode = 'auto';
             this._renderTrack();
         }
         else if (select && textCtrl) { // do nothing, waiting for selection
-            // this._app.stage.interactive = false;
-            this.eventMode = 'auto'
+            this.eventMode = 'auto';
             this._selecting = true;
         }
         else if (text && this._autoPlayEnabled && !waitType) {
-            this._textTypingEffect = this._textController.typingEffect;
-            if (voice) { // here to add autoplay for both text and voice condition
-                const voiceTimeout = this._soundController.voiceDuration;
+            this._textTypingEffect = this.system.get(TextController).typingEffect;
+            if (voice) { 
+                // here to add autoplay for both text and voice condition
+                const voiceTimeout = this.system.get(SoundController).voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
                     this._timeoutToClear = null;
                 }, voiceTimeout);
             }
-            else { // here to add autoplay for only text condition
-                const textTimeout = this._textController.textWaitTime;
+            else { 
+                // here to add autoplay for only text condition
+                const textTimeout = this.system.get(TextController).textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
@@ -384,34 +391,18 @@ export class EventViewer extends Container{
         else if (text && !this._autoPlayEnabled && !waitType) {
             return;
         }
-        else if (movie) {
-            // if (this._fastForwardMode) {
-            //     this._renderTrack();
-            //     return;
-            // }
-            // else { return; }
-        }
-        else if (waitType == "time") { // should be modified, add touch event to progress, not always timeout
-            // if (this._fastForwardMode) {
-            //     this._renderTrack();
-            // }
-            // else {
-                this._timeoutToClear = setTimeout(() => {
-                    this._renderTrack();
-                    this._timeoutToClear = null;
-                }, waitTime);
-            // }
+        else if (waitType == "time") {  // should be modified, add touch event to progress, not always timeout
+            this._timeoutToClear = setTimeout(() => {
+                this._renderTrack();
+                this._timeoutToClear = null;
+            }, waitTime)
         }
         else if (waitType == "effect") {
-            // if (this._fastForwardMode) {
-            //     this._renderTrack();
-            // }
-            // else {
-                this._timeoutToClear = setTimeout(() => {
-                    this._renderTrack();
-                    this._timeoutToClear = null;
-                }, effectValue!.time);
-            // }
+
+            this._timeoutToClear = setTimeout(() => {
+                this._renderTrack();
+                this._timeoutToClear = null;
+            }, effectValue!.time)
         }
         else {
             this._renderTrack();
@@ -463,8 +454,8 @@ export class EventViewer extends Container{
         this._renderTrack();
     }
 
-    get config(){
-        return this.setting;
+    get Options(){
+        return this._options;
     }
 
     get Track(){

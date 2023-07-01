@@ -8,7 +8,7 @@ import { gsap } from 'gsap'
 
 export class SelectController extends Container implements IController {
 
-    public setting : ISetting | undefined = undefined;
+    public options : IViewerOptions | undefined = undefined;
     protected readonly _stMap = new Map();
     protected _neededFrame : number = 1;
     protected _language : string = 'jp';
@@ -23,13 +23,13 @@ export class SelectController extends Container implements IController {
         this._stMap.clear();
     }
 
-    public process(selectDesc: string, nextLabel: string, onClick:Function, afterSelection:Function, translated_text?:string): void {
+    public process(selectDesc: string, nextLabel: string, selectonClick:Function, afterSelection:Function, translated_text?:string): void {
         if (!selectDesc) return;
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new Container();
             thisSelectContainer.addChild(new Sprite(Assets.get(`selectFrame_${this.neededFrame}`)))
-            let currentText : Record<string, string> = { jp: '', zh: '' };
+            let currentText : TextRecord = { jp: '', translated: '' };
             this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer, currentText: currentText });
             this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer});
         }
@@ -46,7 +46,7 @@ export class SelectController extends Container implements IController {
             gsap.to(thisSelectContainer, { pixi: { scaleX: 1.2, scaleY: 1.2 } , duration: 0.1})
 
             setTimeout(() => {
-                onClick(nextLabel);
+                selectonClick(nextLabel);
                 afterSelection();
 
                 this._fadeOutOption();
@@ -56,13 +56,12 @@ export class SelectController extends Container implements IController {
 
         if (translated_text) {
             currentText.jp = selectDesc;
-            currentText.zh = translated_text;
+            currentText.translated = translated_text;
             selectDesc = currentText[this._language]
         }
 
-        // let family = translated_text && this._languageType === 1 ? zhcnFont : usedFont;
         let textObj = new Text(selectDesc, {
-            fontFamily: this.setting?.fonts[this._language].family,
+            fontFamily: this.options?.fonts[this._language].family,
             fontSize: 24,
             fill: 0x000000,
             align: 'center',
@@ -100,7 +99,7 @@ export class SelectController extends Container implements IController {
         this._stMap.forEach((value) => {
             let { thisSelectContainer, currentText } = value;
             let textObj = thisSelectContainer.getChildAt(1);
-            textObj.style.fontFamily = this.setting?.fonts[this._language].family;
+            textObj.style.fontFamily = this.options?.fonts[this._language].family;
             textObj.text = currentText[this._language];
         })
     }

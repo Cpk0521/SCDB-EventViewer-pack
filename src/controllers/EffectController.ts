@@ -12,7 +12,7 @@ export class EffectController extends Container implements IController {
         this._effectMap.clear();
     }
 
-    public process(effectLabel : string, effectTarget : Optional<EffectTarget>, effectValue : Optional<EffectValue>, isFastForward? : boolean){
+    public process(effectLabel : string, effectTarget : Optional<EffectTarget>, effectValue : Optional<EffectValue>){
         if(!effectLabel) return;
         if (!this._effectMap.has(effectLabel)) {
             let thisEffect : Graphics | null | undefined = null;

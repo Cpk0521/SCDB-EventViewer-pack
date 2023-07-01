@@ -18,8 +18,7 @@ export class MovieController extends Container implements IController {
         this.removeChildren(0, this.children.length);
     }
 
-    public process(movie : string, onMovieEnded : Function, isFastForwardMode? : boolean) {
-        // if (!movie || isFastForwardMode) return;
+    public process(movie : string, onMovieEnded : Function) {
         if (!movie) return;
 
         this._onMovieEnded = onMovieEnded;
@@ -27,7 +26,6 @@ export class MovieController extends Container implements IController {
     }
 
     _playMovie(movie : string) {
-        // let texture = PIXI.Texture.from(this._loader.resources[`movie${movie}`].data);
         let texture = Assets.get(`movie_${movie}`);
         let movieSprite = new Sprite(texture);
 

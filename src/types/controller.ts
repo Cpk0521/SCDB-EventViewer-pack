@@ -1,7 +1,7 @@
 import { Container } from "@pixi/display"
 
 export interface IController {
-    setting? : ISetting
+    options? : IViewerOptions
     process? : (...parems : any[]) => void
     reset? : () => void
     addTo? : <C extends Container>(parent : C) => void
