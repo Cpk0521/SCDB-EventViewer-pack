@@ -45,15 +45,20 @@ const viewer = new SCDB.EventViewer();
 */
 viewer.addTo(pixiapp.stage)
 
+/**
+ * load TranslateData
+ * await viewer.searchAndLoadTranslation('produce_events/202100711.json');
+ * or 
+ * await viewer.loadTranslation(url) // *your translation file or full url 
+*/
+await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
 
-// const url = await SCDB.Helper.searchFromMasterList('produce_events/202100711.json');
-// const csv = await SCDB.Helper.loadCSV(url);
-// const data = SCDB.Helper.CSVToJSON(csv);
-
-// await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-// await viewer.loadTranslateData(url);
-// viewer.start();
-
-viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+/**
+ * load Track
+ * or you can use 
+ * viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+*/
+await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+viewer.start();
 
 ```

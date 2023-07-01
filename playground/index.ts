@@ -40,14 +40,11 @@ const app = createApp();
 const viewer = new SCDB.EventViewer();
 app.stage.addChild(viewer);
 
-// viewer.init()
-
 // await viewer.searchAndLoadTranslation('produce_events/202100711.json');
+await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
+
 // await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
 // viewer.start();
-// https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv
-await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
-await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-viewer.start();
-// viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+
 
