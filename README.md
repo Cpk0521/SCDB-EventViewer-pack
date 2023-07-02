@@ -15,7 +15,7 @@ A simple viewer that renders shinycolors events
 
 Via npm
 ```
-npm install pixi-live2d-display
+npm i scdb-eventviewer
 ```
 ```ts
 import { EventViewer } from 'scdb-eventviewer'
