@@ -78,4 +78,8 @@ export class ControllerSystem {
     //     })
     // }
 
+    public process(data : TrackFrames & Record<string, Function>){
+        this.allcontroller.forEach((cont) => cont.process?.(data));
+    }
+
 }

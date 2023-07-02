@@ -12,11 +12,12 @@ export class EffectController extends Container implements IController {
         this._effectMap.clear();
     }
 
-    public process(effectLabel : string, effectTarget : Optional<EffectTarget>, effectValue : Optional<EffectValue>){
+    // public process(effectLabel : string, effectTarget : Optional<EffectTarget>, effectValue : Optional<EffectValue>){
+    public process({effectLabel, effectTarget, effectValue} : TrackFrames){
         if(!effectLabel) return;
         if (!this._effectMap.has(effectLabel)) {
             let thisEffect : Graphics | null | undefined = null;
-            switch (effectTarget.type) {
+            switch (effectTarget?.type) {
                 case "rect":
                     thisEffect = new Graphics();
                     thisEffect.beginFill(`0x${effectTarget.color}`);
@@ -31,7 +32,7 @@ export class EffectController extends Container implements IController {
         let thisEffect = this._effectMap.get(effectLabel);
         if(thisEffect) {
             this.addChild(thisEffect);   
-            fadingEffect(thisEffect!, effectValue);
+            fadingEffect(thisEffect!, effectValue!);
         }
     }
 

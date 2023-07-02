@@ -137,3 +137,5 @@ type FrameData = {
     Optional<Select> &
     Optional<Still> &
     Optional<Wait>;
+
+type TrackFrames = FrameData & translateText;

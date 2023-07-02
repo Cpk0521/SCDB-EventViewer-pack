@@ -25,7 +25,8 @@ export class TextController extends Container implements IController {
         this._endNotification();
     }
 
-    public process(textFrame: string, speaker: string, text: string, translated_text? : string){
+    // public process(textFrame: string, speaker: string, text: string, translated_text? : string){
+    public process({textFrame, speaker, text, translated_text} : TrackFrames){
         this._thisWaitTime = 0;
 
         if (!textFrame || (textFrame == "off" && !this.children.length)) { return; }
@@ -94,7 +95,7 @@ export class TextController extends Container implements IController {
                 // if(!noSpeaker && speaker == 'プロデューサー'){
                 //     managerSound.play()
                 // }
-                this._textObj.text += text.charAt(word_index);
+                this._textObj.text += text?.charAt(word_index);
                 word_index += 1;
             }, 65);
             // }

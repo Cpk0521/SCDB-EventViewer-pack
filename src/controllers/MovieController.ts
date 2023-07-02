@@ -18,7 +18,8 @@ export class MovieController extends Container implements IController {
         this.removeChildren(0, this.children.length);
     }
 
-    public process(movie : string, onMovieEnded : Function) {
+    // public process(movie : string, onMovieEnded : Function) {
+    public process({movie, onMovieEnded} : TrackFrames & Record<string, any>) {
         if (!movie) return;
 
         this._onMovieEnded = onMovieEnded;

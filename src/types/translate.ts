@@ -20,6 +20,3 @@ type TextRecord = {
     translated: string
     [label : string] : string
 }
-
-
-

@@ -57,19 +57,28 @@ export class SpineController extends Container implements IController {
         this._currSpine = {};
     }
 
+    // public process(
+    //     charLabel:string, charId:string, charCategory:any, charPosition:Optional<CharPosition>,
+    //     charScale:number, charAnim1:string, charAnim2:string, charAnim3:string, 
+    //     charAnim4:string, charAnim5:string, charAnim1Loop:boolean, charAnim2Loop:boolean, 
+    //     charAnim3Loop:boolean, charAnim4Loop:boolean, charAnim5Loop:boolean, charLipAnim:string|boolean, 
+    //     lipAnimDuration:number, charEffect:Optional<CharEffect>)
+    // {
     public process(
-        charLabel:string, charId:string, charCategory:any, charPosition:Optional<CharPosition>,
-        charScale:number, charAnim1:string, charAnim2:string, charAnim3:string, 
-        charAnim4:string, charAnim5:string, charAnim1Loop:boolean, charAnim2Loop:boolean, 
-        charAnim3Loop:boolean, charAnim4Loop:boolean, charAnim5Loop:boolean, charLipAnim:string|boolean, 
-        lipAnimDuration:number, charEffect:Optional<CharEffect>)
+        {
+            charLabel, charId, charCategory, charPosition,
+            charScale, charAnim1, charAnim2, charAnim3, 
+            charAnim4, charAnim5, charAnim1Loop, charAnim2Loop, 
+            charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, 
+            lipAnimDuration, charEffect
+        } : TrackFrames & Record<string, Function>)
     {
         if (!charLabel) { return; }
         if (charId) {
             this._currSpine[charLabel] = {
                 currCharId: charId,
                 // currCharCategory: this.spineAlias[charCategory] ?? 'stand'
-                currCharCategory: spineAlias[charCategory] ?? 'stand'
+                currCharCategory: spineAlias[charCategory!] ?? 'stand'
             };
         }
         let { currCharId, currCharCategory } = this._currSpine[charLabel];
@@ -86,7 +95,7 @@ export class SpineController extends Container implements IController {
         charAnim3Loop = charAnim3Loop === undefined ? true : charAnim3Loop;
         charAnim4Loop = charAnim4Loop === undefined ? true : charAnim4Loop;
         charAnim5Loop = charAnim5Loop === undefined ? true : charAnim5Loop;
-        charLipAnim = charLipAnim === undefined ? false : charLipAnim;
+        // charLipAnim = charLipAnim === undefined ? false : charLipAnim;
 
         let thisSpine = this._spineMap.get(char_uid);
 

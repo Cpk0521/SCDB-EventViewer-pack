@@ -3,7 +3,7 @@ import { IController } from '../types/controller'
 import { IMediaInstance, sound, Sound} from '@pixi/sound'
 import { gsap } from 'gsap'
 
-// import * as Sound from '@pixi/sound'
+// import { EventEmitter } from '@pixi/utils'
 
 export class SoundController implements IController{
 
@@ -14,6 +14,7 @@ export class SoundController implements IController{
     protected _onVoiceEnd : Function = () => {};
 
     constructor(){
+        // super()
         sound.volumeAll = 0.1;
     }
 
@@ -34,7 +35,8 @@ export class SoundController implements IController{
         }
     }
 
-    public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function): void {
+    // public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function): void {
+    public process({bgm, se, voice, charLabel, onVoiceEnd} : TrackFrames & Record<string, any>): void {
         if (bgm) {
             this._playBgm(bgm);
         }
@@ -44,7 +46,7 @@ export class SoundController implements IController{
         }
 
         if (voice) {
-            this._playVoice(voice, charLabel, onVoiceEnd);
+            this._playVoice(voice, charLabel!, onVoiceEnd);
         }
     }
 
