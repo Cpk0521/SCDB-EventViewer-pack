@@ -11,17 +11,23 @@ A simple viewer that renders shinycolors events
 -   GSAP : >3
 -   pixi-spine : >4
 
+## Installation
+
+Via npm
+```
+npm install pixi-live2d-display
+```
+```ts
+import { EventViewer } from 'scdb-eventviewer'
+```
+
+Via CDN
+```html
+<script src="https://cdn.jsdelivr.net/npm/scdb-eventviewer/dist/scdb-eventviewer.min.js"></script> 
+
+```
 
 ## Basic usage
-
-```html
-<script src="https://pixijs.download/v7.2.4/pixi.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@pixi/sound@5.2.0/dist/pixi-sound.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pixi-spine@4.0.4/dist/pixi-spine.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.2/PixiPlugin.min.js"></script>
-<script src="scdb-eventviewer.js"></script> 
-```
 
 ```js
 //create pixi app
