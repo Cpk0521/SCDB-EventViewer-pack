@@ -357,7 +357,7 @@ export class EventViewer extends Container{
             onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
         }
 
-        this.system.process(params);
+        this.system.process(params); // charLipAnim 出現問題 找不到原因
 
         // const { speaker, text, textCtrl, textFrame,
         //     bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
