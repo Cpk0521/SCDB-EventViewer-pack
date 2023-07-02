@@ -85,7 +85,7 @@ export class SoundController implements IController{
         this._voiceDuration = 0;
         if (this._currentVoice) {
             this._currentVoice.stop();
-            this._onVoiceEnd();
+            this._onVoiceEnd(); 
         }
 
         this._currentVoice = Assets.get(`voice_${voiceName}`)
@@ -96,12 +96,14 @@ export class SoundController implements IController{
             });
             
             this._voiceDuration = (this._currentVoice.duration) * 1000 + 1000;
+            console.log(this._voiceDuration)
             this._onVoiceEnd = () => {
                 onVoiceEnd(charLabel);
             };
 
             (instance as IMediaInstance).on('end', () => {
                 this._onVoiceEnd();
+                this._currentVoice = null
             });
         }
     }
