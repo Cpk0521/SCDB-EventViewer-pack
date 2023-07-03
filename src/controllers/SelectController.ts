@@ -23,8 +23,9 @@ export class SelectController extends Container implements IController {
         this._stMap.clear();
     }
 
-    public process(selectDesc: string, nextLabel: string, selectonClick:Function, afterSelection:Function, translated_text?:string): void {
-        if (!selectDesc) return;
+    // public process(selectDesc: string, nextLabel: string, selectonClick:Function, afterSelection:Function, translated_text?:string): void {
+    public process({select, nextLabel, translated_text, selectonClick, afterSelection} : TrackFrames & Record<string, any>): void {
+        if (!select) return;
 
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new Container();
@@ -55,12 +56,12 @@ export class SelectController extends Container implements IController {
         }, { once: true });
 
         if (translated_text) {
-            currentText.jp = selectDesc;
+            currentText.jp = select;
             currentText.translated = translated_text;
-            selectDesc = currentText[this._language]
+            select = currentText[this._language]
         }
 
-        let textObj = new Text(selectDesc, {
+        let textObj = new Text(select, {
             fontFamily: this.options?.fonts[this._language].family,
             fontSize: 24,
             fill: 0x000000,

@@ -26,8 +26,6 @@ import { Options } from './ViewerOptions'
 
 interface IEventViewerOptions extends IViewerOptions {}
 
-type TrackFrames = FrameData & translateText;
-
 const interestedEvents : (keyof DisplayObjectEvents)[] = ['click', 'touchstart'];
 const Menu : Record<string, Sprite> = {}
 const AutoBtn_texture : Record<string, Texture> = {}
@@ -122,7 +120,7 @@ export class EventViewer extends Container{
         Assets.addBundle('fonts', fontassets);
         Assets.addBundle('require_assets', flatten(this._options.assets));
 
-        let { require_assets, fonts} = await Assets.loadBundle(['fonts', 'require_assets']);
+        let { require_assets} = await Assets.loadBundle(['fonts', 'require_assets']);
 
         Menu['touchToStart'] = new Sprite(require_assets.touchToStart);
         Menu['autoBtn'] = new Sprite(this._autoPlayEnabled ? require_assets.autoBtn_On : require_assets.autoBtn_Off);
@@ -350,34 +348,16 @@ export class EventViewer extends Container{
             return;
         }
 
-        // const { text, textCtrl, voice, select, nextLabel, effectValue, waitType, waitTime } = this.currentTrack;
+        const { text, textCtrl, voice, select, nextLabel, effectValue, waitType, waitTime } = this.currentTrack;
 
-        // const params = {...this.currentTrack, 
-        //     selectonClick : this._jumpTo.bind(this),
-        //     onMovieEnded : this._renderTrack.bind(this),
-        //     afterSelection : this._afterSelection.bind(this),
-        //     onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
-        // }
+        const params : TrackFrames & Record<string, any> = {...this.currentTrack, 
+            selectonClick : this._jumpTo.bind(this),
+            onMovieEnded : this._renderTrack.bind(this),
+            afterSelection : this._afterSelection.bind(this),
+            onVoiceEnd : this.system.get(SpineController).stopLipAnimation.bind(this.system.get(SpineController))
+        }
 
-        // this.system.process(params);
-
-        const { speaker, text, textCtrl, textFrame,
-            bg, bgEffect, bgEffectTime, fg, fgEffect, fgEffectTime, bgm, se, voice, select, nextLabel, stillId, stillCtrl, still, stillType, movie,
-            charLabel, charId, charCategory, charPosition, charScale, charAnim1, charAnim2, charAnim3, charAnim4, charAnim5,
-            charAnim1Loop, charAnim2Loop, charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, lipAnimDuration, charEffect,
-            effectLabel, effectTarget, effectValue, waitType, waitTime, translated_text} = this.currentTrack;
-
-        this._bgController.process(bg!, bgEffect!, bgEffectTime!);
-        this._fgController.process(fg!, fgEffect!, fgEffectTime!);
-        this._movieController.process(movie!, this._renderTrack.bind(this));
-        this._textController.process(textFrame!, speaker!, text!, translated_text!);
-        this._selectController.process(select!, nextLabel!, this._jumpTo.bind(this), this._afterSelection.bind(this), translated_text!)
-        this._stillController.process(still!, stillType!, stillId!, stillCtrl!)
-        this._soundController.process(bgm!, se!, voice!, charLabel!, this._spineController.stopLipAnimation.bind(this._spineController));
-        this._spineController.process(charLabel!, charId!, charCategory!, charPosition!, charScale!, charAnim1!, charAnim2!, charAnim3!, charAnim4!, charAnim5!,
-            charAnim1Loop!, charAnim2Loop!, charAnim3Loop!, charAnim4Loop!, charAnim5Loop!, charLipAnim!, lipAnimDuration!, charEffect!);
-        this._effectController.process(effectLabel!, effectTarget!, effectValue!)
-
+        this.system.process(params);
 
         if (nextLabel == "end") { // will be handled at forward();
             this._nextLabel = "end";

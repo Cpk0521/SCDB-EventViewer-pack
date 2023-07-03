@@ -8,12 +8,13 @@ export class BGController extends Container implements IController {
 
     protected readonly _bgMap : Map<string, Sprite> = new Map();
 
-    public process(bg : string, bgEffect: string, bgEffectTime: number): void {
+    // public process(bg : string, bgEffect: string, bgEffectTime: number): void {
+    public process({bg , bgEffect, bgEffectTime} : TrackFrames): void {
         if (bg && bgEffect) {
             // if (isFastForward) {
             //     this._insertNewBg(bg, 1, true);
             // }else{
-            this._changeBgByEffect(bg, bgEffect, bgEffectTime);
+            this._changeBgByEffect(bg, bgEffect, bgEffectTime!);
             // }
         }
         else if (bg && !bgEffect) {

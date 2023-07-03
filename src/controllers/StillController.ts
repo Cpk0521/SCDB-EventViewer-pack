@@ -17,7 +17,8 @@ export class StillController extends Container implements IController {
         return this;
     }
 
-    public process(still : string, stillType : string, stillId : string, stillCtrl : string) {
+    // public process(still : string, stillType : string, stillId : string, stillCtrl : string) {
+    public process({still, stillType, stillId, stillCtrl} : TrackFrames) {
         if (stillType && stillId) {
             this._changeStillByType(stillType, stillId);
         }

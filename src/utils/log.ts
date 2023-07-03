@@ -1,5 +1,7 @@
+const { log } = console
+
 export function Hello(){
-    const log = [
+    const logtext = [
         `\n\n %c  %c   ShinyColors Event Viewer ${__VERSION__}   %c  %c  https://github.com/ShinyColorsDB  %c \n\n`,
         'background: #28de10; padding:5px 0;',
         'color: #28de10; background: #030307; padding:5px 0;',
@@ -8,11 +10,11 @@ export function Hello(){
         'background: #28de10; padding:5px 0;',
     ];
 
-    console.log(...log);
+    log(...logtext);
 }
 
 export function TrackLog(current : number, length : number, Track : object){
-    const log = [
+    const logtext = [
         '%c%s%c%s%c%s',
         'color:white;background:#23c4ed',
         '【Track】',
@@ -23,5 +25,5 @@ export function TrackLog(current : number, length : number, Track : object){
         Track
     ];
 
-    console.log(...log);
+    log(...logtext);
 }

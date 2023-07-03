@@ -3,7 +3,7 @@ import { IController } from '../types/controller'
 import { IMediaInstance, sound, Sound} from '@pixi/sound'
 import { gsap } from 'gsap'
 
-// import * as Sound from '@pixi/sound'
+// import { EventEmitter } from '@pixi/utils'
 
 export class SoundController implements IController{
 
@@ -14,6 +14,8 @@ export class SoundController implements IController{
     protected _onVoiceEnd : Function = () => {};
 
     constructor(){
+        // super()
+        sound.disableAutoPause = true;
         sound.volumeAll = 0.1;
     }
 
@@ -34,7 +36,8 @@ export class SoundController implements IController{
         }
     }
 
-    public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function): void {
+    // public process(bgm: string, se: string, voice: string, charLabel: string, onVoiceEnd : Function): void {
+    public process({bgm, se, voice, charLabel, onVoiceEnd} : TrackFrames & Record<string, any>): void {
         if (bgm) {
             this._playBgm(bgm);
         }
@@ -44,7 +47,7 @@ export class SoundController implements IController{
         }
 
         if (voice) {
-            this._playVoice(voice, charLabel, onVoiceEnd);
+            this._playVoice(voice, charLabel!, onVoiceEnd);
         }
     }
 
@@ -83,7 +86,7 @@ export class SoundController implements IController{
         this._voiceDuration = 0;
         if (this._currentVoice) {
             this._currentVoice.stop();
-            this._onVoiceEnd();
+            this._onVoiceEnd(); 
         }
 
         this._currentVoice = Assets.get(`voice_${voiceName}`)
@@ -100,6 +103,7 @@ export class SoundController implements IController{
 
             (instance as IMediaInstance).on('end', () => {
                 this._onVoiceEnd();
+                this._currentVoice = null
             });
         }
     }

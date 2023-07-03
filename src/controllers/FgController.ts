@@ -19,7 +19,8 @@ export class FGController extends Container implements IController {
         this._fgMap.clear();
     }
 
-    public process(fg: string, fgEffect: string, fgEffectTime : number){
+    // public process(fg: string, fgEffect: string, fgEffectTime : number){
+    public process({fg, fgEffect, fgEffectTime} : TrackFrames){
         if (fg == "off") {
             if (this.children.length) {
                 this.removeChildren(0, this.children.length);
@@ -29,7 +30,7 @@ export class FGController extends Container implements IController {
             this._fadeOutFg();
         }
         else if (fg && fgEffect) {
-            this._changeFgByEffect(fg, fgEffect, fgEffectTime);
+            this._changeFgByEffect(fg, fgEffect, fgEffectTime!);
         }
         else if (fg && !fgEffect) {
             this._changeFg(fg, 0, 1);
