@@ -2,16 +2,6 @@ import { Container } from '@pixi/display'
 import { IController , ControllerClass} from './types/controller'
 import type { EventViewer } from './EventViewer';
 
-////打包後出現問題
-// function getParamNames(func: Function): string[] {
-//     const fnStr = func.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm, '');
-//     const result = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')')).match(/([^\s,]+)/g);
-//     if (result === null) {
-//       return [];
-//     }
-//     return result;
-// }
-
 export class ControllerSystem {
 
     private _viewer : EventViewer
@@ -42,11 +32,6 @@ export class ControllerSystem {
             controller.zIndex = order ?? 0
         }
         
-        // const processFn = controller.process
-        // if(processFn){
-        //     result.argNames = getParamNames(processFn);
-        // }
-
         this.allcontroller.set(name, controller)
         
         return controller as C
@@ -68,17 +53,7 @@ export class ControllerSystem {
         this.allcontroller.forEach((cont) => cont.reset?.());
     }
 
-    //打包後出現問題
-    // public process(args : Record<string, any>){
-    //     this.allcontroller.forEach(cont => {
-    //         const processFn = cont.CClass.process
-    //         if(processFn){
-    //             processFn.call(cont.CClass, ...cont.argNames.map(argName => args[argName]!));
-    //         }
-    //     })
-    // }
-
-    public process(data : TrackFrames & Record<string, Function>){
+    public process(data : TrackFrames & Record<string, any>){
         this.allcontroller.forEach((cont) => cont.process?.(data));
     }
 

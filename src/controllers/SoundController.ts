@@ -15,6 +15,7 @@ export class SoundController implements IController{
 
     constructor(){
         // super()
+        sound.disableAutoPause = true;
         sound.volumeAll = 0.1;
     }
 
@@ -96,7 +97,6 @@ export class SoundController implements IController{
             });
             
             this._voiceDuration = (this._currentVoice.duration) * 1000 + 1000;
-            console.log(this._voiceDuration)
             this._onVoiceEnd = () => {
                 onVoiceEnd(charLabel);
             };

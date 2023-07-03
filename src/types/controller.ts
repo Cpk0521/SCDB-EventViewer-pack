@@ -9,5 +9,6 @@ export interface IController {
 }
 
 export interface ControllerClass<C extends IController>{
+    label? : string
     new() : C
 }

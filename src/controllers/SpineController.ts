@@ -71,7 +71,7 @@ export class SpineController extends Container implements IController {
             charAnim4, charAnim5, charAnim1Loop, charAnim2Loop, 
             charAnim3Loop, charAnim4Loop, charAnim5Loop, charLipAnim, 
             lipAnimDuration, charEffect
-        } : TrackFrames & Record<string, Function>)
+        } : TrackFrames & Record<string, any>)
     {
         if (!charLabel) { return; }
         if (charId) {
