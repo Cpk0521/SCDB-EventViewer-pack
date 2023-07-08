@@ -1,6 +1,7 @@
 interface IViewerOptions {
-    hello : boolean;
-    infoLog : boolean,
+    skipHello : boolean;
+    disableInfoLog : boolean,
+    disableBlur : boolean,
     resourceUrl : string,
     fonts : {
         jp : FontSetting,

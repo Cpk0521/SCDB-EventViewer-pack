@@ -1,6 +1,7 @@
 export const Options : IViewerOptions = {
-    infoLog : true,
-    hello : true,
+    skipHello : false,
+    disableInfoLog : false,
+    disableBlur : false,
     resourceUrl : "https://viewer.shinycolors.moe",
     fonts : {
         jp : {
