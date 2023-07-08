@@ -42,15 +42,6 @@ export class EventViewer extends Container{
     //Controller
     protected system : ControllerSystem;
     protected _oninit : boolean = false;
-    protected _bgController! : BGController;
-    protected _fgController! : FGController;
-    protected _spineController! : SpineController;
-    protected _textController! : TextController;
-    protected _selectController! : SelectController;
-    protected _soundController! : SoundController;
-    protected _effectController! : EffectController;
-    protected _movieController! : MovieController;
-    protected _stillController! : StillController;
     //Track
     protected _track : TrackFrames[] = [];
     protected _autoPlayEnabled : boolean = true;
@@ -79,7 +70,9 @@ export class EventViewer extends Container{
         
         extensions.add(Mp4Assets); //增加mp4擴充 for PIXI.Assets
 
-        if(this._options.hello) {Hello();}
+        globalThis.addEventListener('blur', this.onBlur.bind(this));
+
+        if(!this._options.skipHello) {Hello();}
     }
 
     public static new(options? : Partial<IEventViewerOptions>){
@@ -101,15 +94,15 @@ export class EventViewer extends Container{
 
     public async init(){
 
-        this._bgController = this.system.add('bg', BGController, 1);
-        this._spineController =  this.system.add('spine', SpineController, 2);
-        this._fgController = this.system.add('fg', FGController, 3)
-        this._stillController = this.system.add('still', StillController, 4)
-        this._textController = this.system.add('text', TextController, 5)
-        this._selectController = this.system.add('select', SelectController, 6)
-        this._effectController = this.system.add('effect', EffectController, 7)
-        this._movieController = this.system.add('movie', MovieController, 8)
-        this._soundController = this.system.add('sound', SoundController)
+        this.system.add('bg', BGController, 1);
+        this.system.add('spine', SpineController, 2);
+        this.system.add('fg', FGController, 3)
+        this.system.add('still', StillController, 4)
+        this.system.add('text', TextController, 5)
+        this.system.add('select', SelectController, 6)
+        this.system.add('effect', EffectController, 7)
+        this.system.add('movie', MovieController, 8)
+        this.system.add('sound', SoundController)
 
         //load require assets and fonts file
         let fontassets : Record<string, string> = {}
@@ -189,9 +182,9 @@ export class EventViewer extends Container{
                     resources[`${charLabel}_${charId}_${thisCharCategory}`] = `${assetUrl}/spine/${charType}/${thisCharCategory}/${charId}/data.json`;
                 }
             }
-            if (select && !resources[`selectFrame_${this._selectController.neededFrame}`]) {
-                resources[`selectFrame_${this._selectController.neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this._selectController.neededFrame}.png`;
-                this._selectController.frameForward();
+            if (select && !resources[`selectFrame_${this.system.get(SelectController).neededFrame}`]) {
+                resources[`selectFrame_${this.system.get(SelectController).neededFrame}`] = `${assetUrl}/images/event/select_frame/00${this.system.get(SelectController).neededFrame}.png`;
+                this.system.get(SelectController).frameForward();
                 if (!this._mixed && this._translationData) {
                     Frame['translated_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
                 }
@@ -332,14 +325,14 @@ export class EventViewer extends Container{
         this._language = states[(index + 1) % states.length] as translateState
         switchLangBtn.texture = SwitchLangBtn_texture[arr[index]]
 
-        this._selectController.toggleLanguage(this._language as string);
-        this._textController.toggleLanguage(this._language as string);
+        this.system.get(SelectController).toggleLanguage(this._language as string);
+        this.system.get(TextController).toggleLanguage(this._language as string);
     }
     
     protected _renderTrack(){
         if(!this._track) { return; }
         if (this._stopped || this._selecting) { return; }
-        if(this._options.infoLog){
+        if(!this._options.disableInfoLog){
             TrackLog(this._current, this._track.length - 1, this.currentTrack);
         }
 
@@ -376,10 +369,10 @@ export class EventViewer extends Container{
             this._selecting = true;
         }
         else if (text && this._autoPlayEnabled && !waitType) {
-            this._textTypingEffect = this._textController.typingEffect;
+            this._textTypingEffect = this.system.get(TextController).typingEffect;
             if (voice) { 
                 // here to add autoplay for both text and voice condition
-                const voiceTimeout = this._soundController.voiceDuration;
+                const voiceTimeout = this.system.get(SoundController).voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
@@ -388,7 +381,7 @@ export class EventViewer extends Container{
             }
             else { 
                 // here to add autoplay for only text condition
-                const textTimeout = this._textController.textWaitTime;
+                const textTimeout = this.system.get(TextController).textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
                     this._renderTrack();
@@ -460,6 +453,12 @@ export class EventViewer extends Container{
         }
 
         this._renderTrack();
+    }
+
+    protected onBlur(){
+        if(this._autoPlayEnabled && this._current > 0 && !this._options.disableBlur){
+            this._toggleAutoplay();
+        }
     }
 
     get Options(){
