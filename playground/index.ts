@@ -12,7 +12,7 @@ function createApp() {
         height: 640,
     });
 
-    globalThis.__PIXI_APP__ = pixiapp;
+    (globalThis as any).__PIXI_APP__ = pixiapp;
 
     pixiapp.view.setAttribute("id", "ShinyColors");
     document.body.appendChild(pixiapp.view);
@@ -37,11 +37,16 @@ function createApp() {
 }
 
 const app = createApp();
-const viewer = new SCDB.EventViewer();
+const viewer = new SCDB.EventViewer({
+    fonts:{
+        translated : {
+            filepath : './assets/AlimamaShuHeiTi.ttf',
+            family : 'AlimamaShuHeiTi'
+        }
+    }
+});
 app.stage.addChild(viewer);
 
-
-// viewer.init()
 
 // await viewer.searchAndLoadTranslation('produce_events/202100711.json');
 await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')

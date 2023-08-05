@@ -11,6 +11,7 @@ import { Hello, TrackLog } from './utils/log';
 import { updateConfig, flatten } from './utils/updateSetting';
 import { Mp4Assets } from './utils/mp4assets';
 import { createEmptySprite } from './utils/emptySprite';
+import { isUrl } from './utils/isUrl';
 import { ControllerSystem } from './ControllerSystem';
 import { BGController } from './controllers/BGController'
 import { EffectController } from './controllers/EffectController'
@@ -113,8 +114,8 @@ export class EventViewer extends Container{
         Assets.addBundle('fonts', fontassets);
         Assets.addBundle('require_assets', flatten(this._options.assets));
 
-        let { require_assets} = await Assets.loadBundle(['fonts', 'require_assets']);
-
+        let { require_assets } = await Assets.loadBundle(['fonts', 'require_assets']);
+        
         Menu['touchToStart'] = new Sprite(require_assets.touchToStart);
         Menu['autoBtn'] = new Sprite(this._autoPlayEnabled ? require_assets.autoBtn_On : require_assets.autoBtn_Off);
         Menu['switchLangBtn'] = new Sprite(require_assets.translationBtn_Off);
@@ -128,7 +129,42 @@ export class EventViewer extends Container{
         this._oninit = true;
     }
 
-    public async loadTrack(source : string|TrackFrames[]|Object) {
+    
+    // public loadTrack(source : string) : Promise<any>;
+    // public loadTrack(source : string, translate : string) : Promise<any>;
+    // public loadTrack(source : string, translate : TranslateData) : Promise<any>;
+    // public loadTrack(source : string, translate : boolean) : Promise<any>;
+    // public loadTrack(source : TrackFrames[]) : Promise<any>;
+    // public loadTrack(source : TrackFrames[], translate : string) : Promise<any>;
+    // public loadTrack(source : TrackFrames[], translate : TranslateData) : Promise<any>;
+    // public loadTrack(source : string|TrackFrames[], translate? : string|TranslateData|boolean){
+        
+    //     let tag : string;
+    //     let promiseSet = [] as any;
+
+    //     if(typeof source === 'string' && !isUrl(source)) {
+    //         tag = source;
+    //         source = `${this._options.resourceUrl}/json/${tag}`;
+    //         promiseSet.push(() => this._loadTrack(source))
+    //     }
+
+    //     if(translate){
+    //         if(typeof translate === 'boolean' && typeof source === 'string'){
+    //             promiseSet.push(() => this.searchAndLoadTranslation(tag))
+    //         }
+    //         else if(typeof translate === 'string' && !isUrl(translate)){
+    //             promiseSet.push(() => this.searchAndLoadTranslation(translate))
+    //         }
+    //         else{
+    //             promiseSet.push(() => this.loadTranslation(translate))
+    //         }
+    //     }
+
+    //     // return this._loadTrack(source)
+    //     return Promise.all(promiseSet)
+    // }
+
+    public async loadTrack(source : string|TrackFrames[]) {
         if(typeof source === 'string') {
             source = await loadJson<TrackFrames[]>(source);
         }
@@ -205,7 +241,7 @@ export class EventViewer extends Container{
         return await Assets.loadBundle('TrackBundle');
     }
 
-    public loadAndPlayTrack(source : string|TrackFrames[]|Object) {
+    public loadAndPlayTrack(source : string|TrackFrames[]) {
         this.loadTrack(source).then(() => { this.start(); })
     }
 
@@ -214,7 +250,7 @@ export class EventViewer extends Container{
         return await this.loadTranslation(url!);
     }
 
-    public async loadTranslation(source : string|TranslateData|object) {
+    public async loadTranslation(source : string|TranslateData) {
         if(typeof source === 'string') {
             let csvtext = await loadCSVText<string>(source);
             source = CSVToJSON(csvtext);
@@ -375,8 +411,9 @@ export class EventViewer extends Container{
                 const voiceTimeout = this.system.get(SoundController).voiceDuration;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear!);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, voiceTimeout);
             }
             else { 
@@ -384,8 +421,9 @@ export class EventViewer extends Container{
                 const textTimeout = this.system.get(TextController).textWaitTime;
                 this._timeoutToClear = setTimeout(() => {
                     if (!this._autoPlayEnabled) { return; }
-                    this._renderTrack();
+                    clearTimeout(this._timeoutToClear!);
                     this._timeoutToClear = null;
+                    this._renderTrack();
                 }, textTimeout);
             }
         }
@@ -394,15 +432,17 @@ export class EventViewer extends Container{
         }
         else if (waitType == "time") {  // should be modified, add touch event to progress, not always timeout
             this._timeoutToClear = setTimeout(() => {
-                this._renderTrack();
+                clearTimeout(this._timeoutToClear!);
                 this._timeoutToClear = null;
+                this._renderTrack();
             }, waitTime)
         }
         else if (waitType == "effect") {
 
             this._timeoutToClear = setTimeout(() => {
-                this._renderTrack();
+                clearTimeout(this._timeoutToClear!);
                 this._timeoutToClear = null;
+                this._renderTrack();
             }, effectValue!.time)
         }
         else {
@@ -447,6 +487,7 @@ export class EventViewer extends Container{
         if(this._autoPlayEnabled) {return;}
         if(this._timeoutToClear){
             clearTimeout(this._timeoutToClear);
+            this._timeoutToClear = null;
         }
         if(this._textTypingEffect){
             clearInterval(this._textTypingEffect);
