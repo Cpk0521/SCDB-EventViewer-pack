@@ -1,4 +1,5 @@
-import { Container } from "@pixi/display"
+import type { Container } from "@pixi/display"
+import type { IViewerOptions } from "./setting"
 
 export interface IController {
     options? : IViewerOptions

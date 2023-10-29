@@ -1,3 +1,4 @@
+import type { Ieffect, Oeffect } from '@/types/effect';
 import { DisplayObject } from '@pixi/display';
 import { gsap, Power0, Quad} from 'gsap'
 import "gsap/PixiPlugin";

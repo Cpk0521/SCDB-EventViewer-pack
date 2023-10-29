@@ -2,6 +2,7 @@ import { Container } from "@pixi/display";
 import { Sprite } from "@pixi/sprite";
 import { Assets } from '@pixi/assets'
 import { IController } from '../types/controller'
+import type { TrackFrames } from "@/types/track";
 
 export class StillController extends Container implements IController {
 

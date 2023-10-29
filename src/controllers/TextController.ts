@@ -1,15 +1,18 @@
 import { Container } from "@pixi/display";
 import { Sprite } from "@pixi/sprite";
 import { Assets } from '@pixi/assets'
-import { Text, TextStyle} from '@pixi/text'
+import { Text } from '@pixi/text'
 import { IController } from '../types/controller'
+import { IViewerOptions } from '@/types/setting'
+import type { TrackFrames } from "@/types/track";
+import type { TextRecord } from "@/types/translate";
 
 export class TextController extends Container implements IController {
 
     public options : IViewerOptions | undefined = undefined;
     protected readonly _txtFrameMap = new Map();
     protected _thisWaitTime : number = 0;
-    protected _typingEffect : number | NodeJS.Timer | null | undefined = null;
+    protected _typingEffect? : string | number | NodeJS.Timeout | undefined;
     protected _textObj! : Text;
     protected _language : string = 'jp';
     protected _currentText : TextRecord = { jp: '', translated: '' };
@@ -90,7 +93,7 @@ export class TextController extends Container implements IController {
                 if (word_index === text?.length) {
                     clearInterval(this._typingEffect!);
                     // managerSound.stop()
-                    this._typingEffect = null;
+                    this._typingEffect = undefined;
                 }
                 // if(!noSpeaker && speaker == 'プロデューサー'){
                 //     managerSound.play()
@@ -108,7 +111,7 @@ export class TextController extends Container implements IController {
 
         if (this._typingEffect) {
             clearInterval(this._typingEffect);
-            this._typingEffect = null;
+            this._typingEffect = undefined;
         }
 
         if (this._textObj) {            

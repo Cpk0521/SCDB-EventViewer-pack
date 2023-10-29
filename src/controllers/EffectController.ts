@@ -2,6 +2,7 @@ import { Container } from "@pixi/display";
 import { Graphics } from '@pixi/graphics'
 import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
+import type { TrackFrames } from "@/types/track";
 
 export class EffectController extends Container implements IController {
 

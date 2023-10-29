@@ -3,6 +3,7 @@ import { Sprite } from "@pixi/sprite";
 import { Assets } from '@pixi/assets'
 import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
+import type { TrackFrames } from "@/types/track";
 
 export class BGController extends Container implements IController {
 

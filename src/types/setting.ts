@@ -1,4 +1,4 @@
-interface IViewerOptions {
+export interface IViewerOptions {
     skipHello : boolean;
     disableInfoLog : boolean,
     disableBlur : boolean,
@@ -25,11 +25,11 @@ interface IViewerOptions {
     }
 }
 
-type FontSetting = {
+export type FontSetting = {
     filepath : string
     family : string
 }
 
-type Optional<T> = {
+export type Optional<T> = {
     [P in keyof T]?: Optional<T[P]>;
 }

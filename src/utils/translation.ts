@@ -1,4 +1,5 @@
 // searchFromMasterList -> getCSVUrl => fetch => CSVToJSON
+import type { TranslateData } from "@/types/translate";
 import { loadJson } from "./loadJson";
 
 export async function searchFromMasterList(

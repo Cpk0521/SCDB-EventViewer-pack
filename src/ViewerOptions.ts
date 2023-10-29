@@ -1,3 +1,5 @@
+import type { IViewerOptions } from '@/types/setting';
+
 export const Options : IViewerOptions = {
     skipHello : false,
     disableInfoLog : false,

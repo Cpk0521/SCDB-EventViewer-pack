@@ -44,6 +44,7 @@ export default defineConfig({
     plugins: [
         dts({
             insertTypesEntry : true,
+            // rollupTypes: true
         }),
         banner(
             `/**\n * name: ${pkg.name}\n * version: ${pkg.version}\n * author: ${pkg.author}\n */`

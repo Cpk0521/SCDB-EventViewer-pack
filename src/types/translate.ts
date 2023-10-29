@@ -1,21 +1,21 @@
-type TranslateData = {
+export type TranslateData = {
     url : string,
     translater : string,
     table : translateTable[]
 }
 
-type translateTable = {
+export type translateTable = {
     id : string,
     name : string,
     text : string,
     tran : string
 }
 
-type translateText = {
+export type translateText = {
     translated_text? : string
 }
 
-type TextRecord = {
+export type TextRecord = {
     jp: string
     translated: string
     [label : string] : string

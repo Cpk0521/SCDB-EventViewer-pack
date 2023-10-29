@@ -3,13 +3,16 @@
  * https://github.com/darwintree/sc-story-editor/tree/main/src/interfaces
  */
 
-interface CharPosition {
+import type { Optional } from './setting'
+import type { translateText } from './translate'
+
+export interface CharPosition {
     x: 568 | 796 | 310 | 936 | 200 | 686 | 420 | 150 | 986;
     y?: number;
     order?: number;
 }
 
-interface CharEffect {
+export interface CharEffect {
     x?: number;
     y?: number;
     type?: "from" | "to"; // will defaults to "to"
@@ -18,7 +21,7 @@ interface CharEffect {
     scale?: number;
 }
 
-type CharSpine = {
+export type CharSpine = {
     charId: string;
     charCategory:
       | "cb"
@@ -35,7 +38,7 @@ type CharSpine = {
     charScale : number //????
 };
 
-type CharAnim = {
+export type CharAnim = {
     charAnim1?: string;
     charAnim2?: string;
     charAnim3?: string;
@@ -50,7 +53,7 @@ type CharAnim = {
     lipAnimDuration?: number;
 };
 
-type Character = {
+export type Character = {
     // charSpine: string;
     charLabel: string;
     charPosition: CharPosition;
@@ -58,19 +61,19 @@ type Character = {
     // lip: string;
 } & CharSpine & CharAnim;
 
-type Bg = {
+export type Bg = {
     bg: string;
     bgEffect: string;
     bgEffectTime: number;
 }
 
-type Fg = {
+export type Fg = {
     fg: string;
     fgEffect: string;
     fgEffectTime: number;
 }
 
-type FrameText = {
+export type FrameText = {
     speaker: string;
     text: string;
     textCtrl?: string;
@@ -78,7 +81,7 @@ type FrameText = {
     textFrame?: string;
 }
 
-interface EffectValue {
+export interface EffectValue {
     type: 'from' | 'to',
     x: number,
     alpha: number,
@@ -86,37 +89,37 @@ interface EffectValue {
     easing: 'easeInQuart',
 }
 
-interface EffectTarget {
+export interface EffectTarget {
     type: 'rect',
     width: number, // 1136
     height: number, // 640
     color: string, // '000000', 'ffffff'
 }
 
-type Effect = {
+export type Effect = {
     effectLabel: string;
     effectTarget: EffectTarget;
     effectValue: EffectValue;
 }
 
-type Select = {
+export type Select = {
     select: string;
     nextLabel: string;
 }
 
-type Sound = {
+export type Sound = {
     bgm?: string;
     se?: string;
     voice?: string;
     voiceKeep?: boolean;
 }
 
-type Wait = {
+export type Wait = {
     waitType: "time" | "effect";
     waitTime: number; // ms
 }
 
-type Still = {
+export type Still = {
     stillId: string;
     stillCtrl: string;
     still: string;
@@ -124,7 +127,7 @@ type Still = {
 }
 
 
-type FrameData = {
+export type FrameData = {
     id?: number;
     movie?: string;
     label?: string;
@@ -138,4 +141,4 @@ type FrameData = {
     Optional<Still> &
     Optional<Wait>;
 
-type TrackFrames = FrameData & translateText;
+export type TrackFrames = FrameData & translateText;

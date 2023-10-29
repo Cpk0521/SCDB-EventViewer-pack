@@ -4,6 +4,7 @@ import { Assets } from '@pixi/assets'
 import { IController } from '../types/controller'
 import { Texture, VideoResource } from "@pixi/core";
 import { fadingEffect } from "@/utils/effect";
+import type { TrackFrames } from "@/types/track";
 
 export class MovieController extends Container implements IController {
 

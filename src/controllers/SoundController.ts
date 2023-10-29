@@ -2,6 +2,7 @@ import { Assets } from '@pixi/assets'
 import { IController } from '../types/controller'
 import { IMediaInstance, sound, Sound} from '@pixi/sound'
 import { gsap } from 'gsap'
+import type { TrackFrames } from "@/types/track";
 
 // import { EventEmitter } from '@pixi/utils'
 

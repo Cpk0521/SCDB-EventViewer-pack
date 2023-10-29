@@ -1,6 +1,7 @@
 import { Container } from '@pixi/display'
 import { IController , ControllerClass} from './types/controller'
 import type { EventViewer } from './EventViewer';
+import type { TrackFrames } from "@/types/track";
 
 export class ControllerSystem {
 

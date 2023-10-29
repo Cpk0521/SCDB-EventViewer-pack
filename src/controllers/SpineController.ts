@@ -3,6 +3,7 @@ import { Assets } from '@pixi/assets'
 import { Spine , EventTimeline, Event, TrackEntry} from '@pixi-spine/runtime-3.7'
 import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
+import type { TrackFrames } from "@/types/track";
 
 type SpineRecord = {
     currCharId : string,

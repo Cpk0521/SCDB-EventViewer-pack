@@ -1,3 +1,4 @@
+import type { Optional } from "@/types/setting"
 import { Texture } from "@pixi/core"
 import { Sprite } from "@pixi/sprite"
 

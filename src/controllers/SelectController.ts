@@ -4,7 +4,9 @@ import { Assets } from '@pixi/assets'
 import { Text } from '@pixi/text'
 import { IController } from '../types/controller'
 import { gsap } from 'gsap'
-
+import type { TrackFrames } from "@/types/track";
+import type { IViewerOptions } from "@/types/setting";
+import type { TextRecord } from "@/types/translate";
 
 export class SelectController extends Container implements IController {
 
