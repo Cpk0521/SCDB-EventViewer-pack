@@ -7,7 +7,7 @@
 A simple viewer that renders shinycolors events
 
 ## Requirements
--   PixiJS : >7
+-   PixiJS : >8
 -   GSAP : >3
 -   pixi-spine : >4
 
@@ -17,6 +17,7 @@ Via npm
 ```
 npm i scdb-eventviewer
 ```
+To import into your project
 ```ts
 import { EventViewer } from 'scdb-eventviewer'
 ```
@@ -30,41 +31,7 @@ Via CDN
 ## Basic usage
 
 ```js
-//create pixi app
-const pixiapp = new PIXI.Application({
-        width: 1136,
-        height: 640,
-        view: document.getElementById('canvas'),
-});
 
-/**
- * create EventViewer
- * same as 
- * const viewer = SCDB.EventViewer.new()
-*/
-const viewer = new SCDB.EventViewer();
 
-/**
- * add the viewer to app stage
- * same as
- * pixiapp.stage.addChild(viewer);
-*/
-viewer.addTo(pixiapp.stage)
-
-/**
- * load TranslateData
- * await viewer.searchAndLoadTranslation('produce_events/202100711.json');
- * or 
- * await viewer.loadTranslation(url) // *your translation file or full url 
-*/
-await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
-
-/**
- * load Track
- * or you can use 
- * viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-*/
-await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-viewer.start();
 
 ```

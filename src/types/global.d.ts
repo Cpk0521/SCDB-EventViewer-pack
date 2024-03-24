@@ -1,6 +1,6 @@
-//https://github.com/pixijs/pixijs/issues/8957
-declare namespace GlobalMixins {
-	interface DisplayObjectEvents extends FederatedEventEmitterTypes {
-		[label: ({} & string) | ({} & symbol)]: any;
-	}
-}
+// //https://github.com/pixijs/pixijs/issues/8957
+// declare namespace GlobalMixins {
+// 	interface DisplayObjectEvents extends FederatedEventEmitterTypes {
+// 		[label: ({} & string) | ({} & symbol)]: any;
+// 	}
+// }

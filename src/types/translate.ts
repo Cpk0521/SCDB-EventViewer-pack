@@ -20,3 +20,9 @@ export type TextRecord = {
     translated: string
     [label : string] : string
 }
+
+
+export interface TranslateReader {
+    read(uid : number) : TranslateData
+    get() : translateText
+}

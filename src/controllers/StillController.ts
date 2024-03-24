@@ -1,12 +1,19 @@
-import { Container } from "@pixi/display";
-import { Sprite } from "@pixi/sprite";
-import { Assets } from '@pixi/assets'
+import { Container, Sprite, Assets } from "pixi.js";
 import { IController } from '../types/controller'
 import type { TrackFrames } from "@/types/track";
+import type { EventViewer } from "../EventViewer";
 
 export class StillController extends Container implements IController {
 
+    protected viewer: EventViewer;
     protected readonly _stMap = new Map();
+
+    constructor(viewer: EventViewer, order?: number) {
+        super();
+        this.viewer = viewer;
+        this.addTo(viewer);
+        this.zIndex = order ?? 0;
+    }
 
     public reset(): void {
         this.removeChildren(0, this.children.length);

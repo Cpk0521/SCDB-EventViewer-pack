@@ -1,6 +1,6 @@
 {
   "name": "scdb-eventviewer",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "A self made event viewer to render events in game",
   "author": "ShinyColorsDB",
   "license": "MIT",
@@ -30,11 +30,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@pixi/sound": "^5.2.0",
+    "@pixi/sound": "^6.0.0",
     "@types/node": "^20.3.2",
     "gsap": "^3.12.1",
-    "pixi-spine": "^4.0.4",
-    "pixi.js": "^7.2.4",
+    "pixi.js": "^8.0.4",
     "rimraf": "^5.0.1",
     "terser": "^5.18.2",
     "typescript": "^4.6.4",
@@ -43,11 +42,6 @@
     "vite-plugin-dts": "^3.0.0-beta.3"
   },
   "peerDependencies": {
-    "@pixi/assets": "^7.2.4",
-    "@pixi/core": "^7.2.4",
-    "@pixi/display": "^7.2.4",
-    "@pixi/events": "^7.2.4",
-    "@pixi/sprite": "^7.2.4",
-    "@pixi/utils": "^7.2.4"
+    "pixi.js": "^8.0.0"
   }
 }

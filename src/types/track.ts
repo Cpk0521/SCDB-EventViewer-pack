@@ -3,8 +3,11 @@
  * https://github.com/darwintree/sc-story-editor/tree/main/src/interfaces
  */
 
-import type { Optional } from './setting'
 import type { translateText } from './translate'
+
+export type Optional<T> = {
+    [P in keyof T]?: Optional<T[P]>;
+}
 
 export interface CharPosition {
     x: 568 | 796 | 310 | 936 | 200 | 686 | 420 | 150 | 986;
@@ -126,7 +129,6 @@ export type Still = {
     stillType: string;
 }
 
-
 export type FrameData = {
     id?: number;
     movie?: string;
@@ -139,6 +141,6 @@ export type FrameData = {
     Optional<FrameText> &
     Optional<Select> &
     Optional<Still> &
-    Optional<Wait>;
+    Optional<Wait> ;
 
 export type TrackFrames = FrameData & translateText;

@@ -1,21 +1,37 @@
-import * as PIXI from 'pixi.js'
-import * as SCDB from '../src'
+// import * as PIXI from 'pixi.js'
+import {
+    Assets,
+    Renderer,
+    Application,
+    autoDetectRenderer,
+    Container,
+    extensions,
+    Sprite,
+    ExtensionType,
+} from "pixi.js";
+import * as SCDB from "../src";
 
-function createApp() {
+async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
     if (document.getElementById("ShinyColors")) {
         document.getElementById("ShinyColors")!.remove();
     }
 
-    const pixiapp = new PIXI.Application<HTMLCanvasElement>({
-        hello : false,
+    const app = new Application<Renderer<HTMLCanvasElement>>();
+
+    await app.init({
+        preference,
+        backgroundAlpha: 1,
+        backgroundColor: 0x000000,
         width: 1136,
         height: 640,
+        antialias: false,
+        hello: true,
     });
 
-    (globalThis as any).__PIXI_APP__ = pixiapp;
+    (globalThis as any).__PIXI_APP__ = app;
 
-    pixiapp.view.setAttribute("id", "ShinyColors");
-    document.body.appendChild(pixiapp.view);
+    app.canvas.setAttribute("id", "ShinyColors");
+    document.body.appendChild(app.canvas);
 
     let resize = () => {
         let height = document.documentElement.clientHeight;
@@ -26,31 +42,17 @@ function createApp() {
         let resizedX = 1136 * ratio;
         let resizedY = 640 * ratio;
 
-        pixiapp.view.style.width = resizedX + 'px';
-        pixiapp.view.style.height = resizedY + 'px';
-    }
+        app.canvas.style.width = resizedX + "px";
+        app.canvas.style.height = resizedY + "px";
+    };
 
     resize();
     window.onresize = () => resize();
 
-    return pixiapp
+    return app;
 }
 
-const app = createApp();
-const viewer = new SCDB.EventViewer({
-    fonts:{
-        translated : {
-            filepath : './assets/AlimamaShuHeiTi.ttf',
-            family : 'AlimamaShuHeiTi'
-        }
-    }
-});
-app.stage.addChild(viewer);
 
-
-// await viewer.searchAndLoadTranslation('produce_events/202100711.json');
-await viewer.loadTranslation('https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/ac1b168.csv')
-
-// await viewer.loadTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
-// viewer.start();
-viewer.loadAndPlayTrack('https://viewer.shinycolors.moe/json/produce_events/202100711.json');
+const app = await createApp();
+const viewer = SCDB.EventViewer.new();
+viewer.addTo(app.stage);

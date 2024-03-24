@@ -1,12 +1,10 @@
-import { Container } from "@pixi/display";
-import { Sprite } from "@pixi/sprite";
-import { Assets } from '@pixi/assets'
-import { Text } from '@pixi/text'
+import { Container, Sprite, Assets, Text } from 'pixi.js';
 import { IController } from '../types/controller'
 import { gsap } from 'gsap'
 import type { TrackFrames } from "@/types/track";
 import type { IViewerOptions } from "@/types/setting";
 import type { TextRecord } from "@/types/translate";
+import type { EventViewer } from "../EventViewer";
 
 export class SelectController extends Container implements IController {
 
@@ -14,6 +12,14 @@ export class SelectController extends Container implements IController {
     protected readonly _stMap = new Map();
     protected _neededFrame : number = 1;
     protected _language : string = 'jp';
+    protected viewer: EventViewer;
+
+    constructor(viewer: EventViewer, order?: number) {
+        super();
+        this.viewer = viewer;
+        this.addTo(viewer);
+        this.zIndex = order ?? 0;
+    }
 
     public addTo<C extends Container>(parent : C): this {
         parent.addChild(this);
