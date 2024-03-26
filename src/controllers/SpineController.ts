@@ -1,6 +1,5 @@
 import { Container, Assets } from 'pixi.js';
 // import { Spine , EventTimeline, Event, TrackEntry} from '@pixi-spine/runtime-3.7'
-import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
 import type { EventViewer } from "../EventViewer";
@@ -27,7 +26,7 @@ const LOOP_EVENT_NAME : string = "loop_start";
 const ANIMATION_MIX : number = 0.3;
 // const TRACK_DEFAULT_ALPHA : number = 0.99;
 
-export class SpineController extends Container implements IController {
+export class SpineController extends Container {
 
     // protected readonly _spineMap : Map<string, Spine>= new Map();
     protected _currSpine : Record<string, SpineRecord> = {};
@@ -41,12 +40,12 @@ export class SpineController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
-    public addTo<C extends Container>(parent : C): this {
+    public addTo<C extends Container>(parent: C, order?: number): this {
         parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
 

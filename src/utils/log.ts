@@ -1,6 +1,6 @@
 const { log } = console;
 
-export function Hello() {
+export function Banner() {
     log(
         ...[
             `\n\n %c  %c   ShinyColors Event Viewer ${__VERSION__}   %c  %c  https://github.com/ShinyColorsDB  %c \n\n`,

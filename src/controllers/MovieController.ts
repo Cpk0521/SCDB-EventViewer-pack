@@ -1,10 +1,9 @@
 import { Container, Sprite, Assets, Texture,  } from 'pixi.js';
-import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
 import type { EventViewer } from "../EventViewer";
 
-export class MovieController extends Container implements IController {
+export class MovieController extends Container {
 
     protected viewer: EventViewer;
     protected _onMovieEnded : Function = () => {} 
@@ -12,13 +11,13 @@ export class MovieController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
     
-    public addTo<C extends Container>(parent : C): this {
-        parent.addChild(this)
-        return this
+    public addTo<C extends Container>(parent: C, order?: number): this {
+        parent.addChild(this);
+        this.zIndex = order ?? 0;
+        return this;
     }
 
     public reset() {

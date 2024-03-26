@@ -1,5 +1,4 @@
 import { Assets } from "pixi.js";
-import { IController } from "../types/controller";
 import { IMediaInstance, sound, Sound } from "@pixi/sound";
 import { gsap } from "gsap";
 import type { TrackFrames } from "@/types/track";
@@ -7,7 +6,7 @@ import type { EventViewer } from "../EventViewer";
 
 // import { EventEmitter } from '@pixi/utils'
 
-export class SoundController implements IController {
+export class SoundController {
     protected _voiceDuration: number = 0;
     protected _currentBgm: Sound | undefined | null = null;
     protected _currentVoice: Sound | undefined | null = null;

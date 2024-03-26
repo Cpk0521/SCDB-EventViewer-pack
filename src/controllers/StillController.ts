@@ -1,9 +1,8 @@
 import { Container, Sprite, Assets } from "pixi.js";
-import { IController } from '../types/controller'
 import type { TrackFrames } from "@/types/track";
 import type { EventViewer } from "../EventViewer";
 
-export class StillController extends Container implements IController {
+export class StillController extends Container {
 
     protected viewer: EventViewer;
     protected readonly _stMap = new Map();
@@ -11,8 +10,7 @@ export class StillController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
     public reset(): void {
@@ -20,8 +18,9 @@ export class StillController extends Container implements IController {
         this._stMap.clear();
     }
 
-    public addTo<T extends Container>(parent : T){
+    public addTo<C extends Container>(parent: C, order?: number): this {
         parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
 

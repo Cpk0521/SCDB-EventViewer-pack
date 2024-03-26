@@ -1,11 +1,10 @@
 import { Container, Sprite, Assets, Text } from "pixi.js";
-import { IController } from '../types/controller'
 // import { IViewerOptions } from '@/types/setting'
 import type { TrackFrames } from "@/types/track";
 import type { TextRecord } from "@/types/translate";
 import type { EventViewer } from "../EventViewer";
 
-export class TextController extends Container implements IController {
+export class TextController extends Container {
 
     protected viewer: EventViewer;
     // public options : IViewerOptions | undefined = undefined;
@@ -19,12 +18,12 @@ export class TextController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
-    public addTo<C extends Container>(parent : C): this {
+    public addTo<C extends Container>(parent: C, order?: number): this {
         parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
 

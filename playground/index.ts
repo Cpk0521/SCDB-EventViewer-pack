@@ -1,15 +1,5 @@
-// import * as PIXI from 'pixi.js'
-import {
-    Assets,
-    Renderer,
-    Application,
-    autoDetectRenderer,
-    Container,
-    extensions,
-    Sprite,
-    ExtensionType,
-} from "pixi.js";
-import * as SCDB from "../src";
+import { Renderer, Application, Container } from "pixi.js";
+import { EventViewer, TranslateReader} from "../src";
 
 async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
     if (document.getElementById("ShinyColors")) {
@@ -52,7 +42,20 @@ async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
     return app;
 }
 
-
 const app = await createApp();
-const viewer = SCDB.EventViewer.new();
+const viewer = EventViewer.create();
+
+
+const reader : TranslateReader = {
+    language : 'en',
+    read(uid) {
+        return undefined
+    },
+    get(){
+        return undefined
+    }
+}
+
+viewer.addTranslateReader(reader);
+
 viewer.addTo(app.stage);

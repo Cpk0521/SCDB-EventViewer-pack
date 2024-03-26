@@ -1,14 +1,13 @@
 import { Container, Sprite, Assets, Text } from 'pixi.js';
-import { IController } from '../types/controller'
 import { gsap } from 'gsap'
 import type { TrackFrames } from "@/types/track";
-import type { IViewerOptions } from "@/types/setting";
+import type { ViewerProps } from "@/types/setting";
 import type { TextRecord } from "@/types/translate";
 import type { EventViewer } from "../EventViewer";
 
-export class SelectController extends Container implements IController {
+export class SelectController extends Container {
 
-    public options : IViewerOptions | undefined = undefined;
+    public options : ViewerProps | undefined = undefined;
     protected readonly _stMap = new Map();
     protected _neededFrame : number = 1;
     protected _language : string = 'jp';
@@ -17,12 +16,12 @@ export class SelectController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
-    public addTo<C extends Container>(parent : C): this {
+    public addTo<C extends Container>(parent: C, order?: number): this {
         parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
 
@@ -70,7 +69,7 @@ export class SelectController extends Container implements IController {
         }
 
         let textObj = new Text(select, {
-            fontFamily: this.options?.fonts[this._language].family,
+            // fontFamily: this.options?.fonts[this._language].family,
             fontSize: 24,
             fill: 0x000000,
             align: 'center',
@@ -108,7 +107,7 @@ export class SelectController extends Container implements IController {
         this._stMap.forEach((value) => {
             let { thisSelectContainer, currentText } = value;
             let textObj = thisSelectContainer.getChildAt(1);
-            textObj.style.fontFamily = this.options?.fonts[this._language].family;
+            // textObj.style.fontFamily = this.options?.fonts[this._language].family;
             textObj.text = currentText[this._language];
         })
     }

@@ -1,10 +1,9 @@
 import { Container, Sprite, Assets } from 'pixi.js';
-import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
 import type { EventViewer } from "../EventViewer";
 
-export class FGController extends Container implements IController {
+export class FGController extends Container {
 
     protected readonly _fgMap : Map<string, Sprite> = new Map();
     protected _currentFg : undefined | null | Sprite;
@@ -13,12 +12,12 @@ export class FGController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
-    public addTo<C extends Container>(parent : C): this {
+    public addTo<C extends Container>(parent: C, order?: number): this {
         parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
 

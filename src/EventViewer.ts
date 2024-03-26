@@ -10,11 +10,12 @@ import "@pixi/sound";
 // import '@pixi-spine/loader-uni'
 // import { loadJson, loadCSVText } from "./utils/loadJson";
 // import { CSVToJSON, searchFromMasterList } from "./utils/translation";
-import { Hello, TrackLog } from "./utils/log";
+import { Banner, TrackLog } from "./utils/log";
 import { updateConfig, flatten } from "./utils/updateSetting";
 import { createEmptySprite } from "./utils/emptySprite";
-import { ViewerProps, spineAlias } from "@/types/setting";
+import type { ViewerProps, spineAlias } from "@/types/setting";
 import type { TrackFrames } from "@/types/track";
+import type { TranslateReader } from "@/types/translate";
 
 import { BGController } from "./controllers/BGController";
 import { EffectController } from "./controllers/EffectController";
@@ -25,7 +26,8 @@ import { SoundController } from "./controllers/SoundController";
 import { SpineController } from "./controllers/SpineController";
 import { StillController } from "./controllers/StillController";
 import { TextController } from "./controllers/TextController";
-import { TranslateController } from "./controllers/TranslateController";
+import { TrackManager } from "./managers/TrackManager";
+import { TranslateManager } from "./managers/TranslateManager";
 
 const interestedEvents: (keyof ContainerEvents)[] = ["click", "touchstart"];
 // const Menu: Record<string, Sprite> = {};
@@ -33,7 +35,7 @@ const interestedEvents: (keyof ContainerEvents)[] = ["click", "touchstart"];
 // const SwitchLangBtn_texture: Record<string, Texture> = {};
 
 const ViewerOptions : ViewerProps = {
-    skipHello : false,
+    skipBanner : false,
     disableInfoLog : false,
     disableBlur : false,
     resourceUrl : "https://viewer.shinycolors.moe",
@@ -67,54 +69,59 @@ export class EventViewer extends Container {
     public effectController: EffectController = new EffectController(this, 7);
     public movieController: MovieController = new MovieController(this, 8);
     public soundController: SoundController = new SoundController(this);
-    public translateController: TranslateController = new TranslateController(this);
+    //Manager
+    public translateManager: TranslateManager = new TranslateManager(this);
+    public trackManager: TrackManager = new TrackManager(this);
     //Track
-    protected _track: TrackFrames[] = [];
-    protected _autoPlayEnabled: boolean = true;
-    protected _current: number = 0;
-    protected _nextLabel: string | undefined | null;
-    protected _stopTrackIndex: number = -1;
-    protected _timeoutToClear?: string | number | NodeJS.Timeout | undefined;
-    protected _textTypingEffect?: string | number | NodeJS.Timeout | undefined;
-    protected _stopped: boolean = false;
-    protected _selecting: boolean = false;
+    // protected _track: TrackFrames[] = [];
+    // protected _autoPlayEnabled: boolean = true;
+    // protected _current: number = 0;
+    // protected _nextLabel: string | undefined | null;
+    // protected _stopTrackIndex: number = -1;
+    // protected _timeoutToClear?: string | number | NodeJS.Timeout | undefined;
+    // protected _textTypingEffect?: string | number | NodeJS.Timeout | undefined;
+    // protected _stopped: boolean = false;
+    // protected _selecting: boolean = false;
 
     constructor(options?: Partial<ViewerProps>) {
         super();
 
-        if (!this._options.skipHello) {
-            Hello();
+        if (!this._options.skipBanner) {
+            Banner();
         }
 
         this.addChild(createEmptySprite({color : 0x000000}))
         this.sortableChildren = true;
+        this.eventMode = 'static';
+        globalThis.addEventListener("blur", this._onBlur.bind(this));
 
         if (options) {
             this._options = updateConfig(this._options, options);
             console.log(this._options)
         }
 
-        globalThis.addEventListener("blur", this.onBlur.bind(this));
     }
 
-    public static new(options?: Partial<ViewerProps>) {
+    public static create(options?: Partial<ViewerProps>) {
         return new this(options);
     }
-
+    
     public addTo<T extends Container>(parent: T) {
         parent.addChild(this);
         return this;
     }
 
-    public async clearTrack() {}
+    public async clear() {
+        
+    }
 
     public async init() {
         this._oninit = true;
     }
 
-    public async loadTrack(source: string | TrackFrames[]) {}
+    public async load(source: string | TrackFrames[]) {}
 
-    public loadAndPlayTrack(source: string | TrackFrames[]) {}
+    public loadAndPlay(source: string | TrackFrames[]) {}
 
     public start() {}
 
@@ -128,7 +135,7 @@ export class EventViewer extends Container {
 
     protected _renderTrack() {}
 
-    protected forward() {}
+    protected _forward() {}
 
     protected _jumpTo(nextLabel: string) {}
 
@@ -136,23 +143,29 @@ export class EventViewer extends Container {
 
     protected _afterSelection() {}
 
-    protected _tapEffect(e: FederatedPointerEvent) {}
+    protected _tapEffect(event: FederatedPointerEvent) {}
 
-    protected onBlur() {}
+    protected _onBlur() {}
+
+    public addTranslateReader(...readers : TranslateReader[]){
+        readers.forEach((reader : TranslateReader) => {
+            this.translateManager.addReader(reader);
+        })
+    }
 
     get Options() {
         return this._options;
     }
 
-    get Track() {
-        return this._track;
-    }
+    // get Track() {
+    //     return this._track;
+    // }
 
-    get currentTrack() {
-        return this._track[this._current];
-    }
+    // get currentTrack() {
+    //     return this._track[this._current];
+    // }
 
-    get nextTrack() {
-        return this._track[this._current + 1];
-    }
+    // get nextTrack() {
+    //     return this._track[this._current + 1];
+    // }
 }

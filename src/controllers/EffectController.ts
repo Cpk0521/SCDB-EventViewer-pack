@@ -1,10 +1,9 @@
 import { Container, Graphics } from 'pixi.js';
-import { IController } from '../types/controller'
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
 import type { EventViewer } from "../EventViewer";
 
-export class EffectController extends Container implements IController {
+export class EffectController extends Container{
 
     protected readonly _effectMap : Map<string, Graphics> = new Map();
     protected viewer: EventViewer;
@@ -12,8 +11,7 @@ export class EffectController extends Container implements IController {
     constructor(viewer: EventViewer, order?: number) {
         super();
         this.viewer = viewer;
-        this.addTo(viewer);
-        this.zIndex = order ?? 0;
+        this.addTo(viewer, order);
     }
 
     public reset(){
@@ -45,8 +43,9 @@ export class EffectController extends Container implements IController {
         // }
     }
 
-    public addTo<C extends Container>(parent : C): this {
-        // parent.addChild(this);
+    public addTo<C extends Container>(parent: C, order?: number): this {
+        parent.addChild(this);
+        this.zIndex = order ?? 0;
         return this;
     }
     
