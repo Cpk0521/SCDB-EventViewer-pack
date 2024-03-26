@@ -9,7 +9,7 @@ export type TranslateData = {
 export type translateTable = {
     id: string;
     name: string;
-    text: string;
+    text?: string;
     tran: string;
 };
 
@@ -25,7 +25,8 @@ export type TextRecord = {
 
 export interface TranslateReader {
     language: string;
+    name?: string;
     assets?: BtnSetting;
-    read(uid: number): TextRecord | undefined;
-    get(): translateText | undefined;
+    read: (tag: string) => Promise<TranslateData | undefined>;
+    test?(): Promise<any>;
 }

@@ -44,18 +44,4 @@ async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
 
 const app = await createApp();
 const viewer = EventViewer.create();
-
-
-const reader : TranslateReader = {
-    language : 'en',
-    read(uid) {
-        return undefined
-    },
-    get(){
-        return undefined
-    }
-}
-
-viewer.addTranslateReader(reader);
-
 viewer.addTo(app.stage);
