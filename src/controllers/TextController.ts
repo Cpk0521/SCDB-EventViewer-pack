@@ -1,7 +1,7 @@
 import { Container, Sprite, Assets, Text } from "pixi.js";
 // import { IViewerOptions } from '@/types/setting'
 import type { TrackFrames } from "@/types/track";
-import type { TextRecord } from "@/types/translate";
+// import type { TextRecord } from "@/types/translate";
 import type { EventViewer } from "../EventViewer";
 
 export class TextController extends Container {
@@ -12,8 +12,8 @@ export class TextController extends Container {
     protected _thisWaitTime : number = 0;
     protected _typingEffect? : string | number | NodeJS.Timeout | undefined;
     protected _textObj! : Text;
-    protected _language : string = 'jp';
-    protected _currentText : TextRecord = { jp: '', translated: '' };
+    // protected _language : string = 'jp';
+    // protected _currentText : TextRecord = { jp: '', translated: '' };
 
     constructor(viewer: EventViewer, order?: number) {
         super();

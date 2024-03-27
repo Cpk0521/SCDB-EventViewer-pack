@@ -2,16 +2,16 @@ import { Container, Sprite, Assets, Text } from 'pixi.js';
 import { gsap } from 'gsap'
 import type { TrackFrames } from "@/types/track";
 import type { ViewerProps } from "@/types/setting";
-import type { TextRecord } from "@/types/translate";
+// import type { TextRecord } from "@/types/translate";
 import type { EventViewer } from "../EventViewer";
 
 export class SelectController extends Container {
 
+    protected viewer: EventViewer;
     public options : ViewerProps | undefined = undefined;
     protected readonly _stMap = new Map();
     protected _neededFrame : number = 1;
-    protected _language : string = 'jp';
-    protected viewer: EventViewer;
+    // protected _language : string = 'jp';
 
     constructor(viewer: EventViewer, order?: number) {
         super();
@@ -37,13 +37,13 @@ export class SelectController extends Container {
         if (!this._stMap.has(`selectFrame${this.neededFrame}`)) {
             let thisSelectContainer = new Container();
             thisSelectContainer.addChild(new Sprite(Assets.get(`selectFrame_${this.neededFrame}`)))
-            let currentText : TextRecord = { jp: '', translated: '' };
-            this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer, currentText: currentText });
+            // let currentText : TextRecord = { jp: '', translated: '' }; // v7 -> v8 need change
+            // this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer, currentText: currentText });
             this._stMap.set(`selectFrame${this.neededFrame}`, { thisSelectContainer: thisSelectContainer});
         }
 
         let { thisSelectContainer, currentText } = this._stMap.get(`selectFrame${this.neededFrame}`);
-        thisSelectContainer.eventMode = 'static'; // thisSelectContainer.interactive = true;
+        thisSelectContainer.eventMode = 'static';
         const localBound = thisSelectContainer.getLocalBounds();
         thisSelectContainer.pivot.set(localBound.width / 2, localBound.height / 2);
 
@@ -62,25 +62,25 @@ export class SelectController extends Container {
 
         }, { once: true });
 
-        if (translated_text) {
-            currentText.jp = select;
-            currentText.translated = translated_text;
-            select = currentText[this._language]
-        }
+        // if (translated_text) {
+        //     currentText.jp = select;
+        //     currentText.translated = translated_text;
+        //     select = currentText[this._language]
+        // }
 
-        let textObj = new Text(select, {
-            // fontFamily: this.options?.fonts[this._language].family,
-            fontSize: 24,
-            fill: 0x000000,
-            align: 'center',
-            padding: 3
-        });
-        thisSelectContainer.addChild(textObj);
-        this.addChild(thisSelectContainer);
+        // let textObj = new Text(select, {
+        //     // fontFamily: this.options?.fonts[this._language].family,
+        //     fontSize: 24,
+        //     fill: 0x000000,
+        //     align: 'center',
+        //     padding: 3
+        // });
+        // thisSelectContainer.addChild(textObj);
+        // this.addChild(thisSelectContainer);
 
-        // for selectFrame size is 318x172
-        textObj.anchor.set(0.5);
-        textObj.position.set(159, 86);
+        // // for selectFrame size is 318x172
+        // textObj.anchor.set(0.5);
+        // textObj.position.set(159, 86);
 
         switch (this.neededFrame) {
             case 1:
@@ -103,18 +103,18 @@ export class SelectController extends Container {
     }
 
     public toggleLanguage(lang : string) {
-        this._language = lang
-        this._stMap.forEach((value) => {
-            let { thisSelectContainer, currentText } = value;
-            let textObj = thisSelectContainer.getChildAt(1);
-            // textObj.style.fontFamily = this.options?.fonts[this._language].family;
-            textObj.text = currentText[this._language];
-        })
+        // this._language = lang
+        // this._stMap.forEach((value) => {
+        //     let { thisSelectContainer, currentText } = value;
+        //     let textObj = thisSelectContainer.getChildAt(1);
+        //     // textObj.style.fontFamily = this.options?.fonts[this._language].family;
+        //     textObj.text = currentText[this._language];
+        // })
     }
 
     protected _disableInteractive(){
         this._stMap.forEach(st => {
-            st.eventMode = 'auto'; // st.interactive = false;
+            st.eventMode = 'auto';
         });
     }
 

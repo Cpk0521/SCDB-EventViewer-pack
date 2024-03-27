@@ -33,25 +33,25 @@ export class MovieController extends Container {
     }
 
     _playMovie(movie : string) {
-        // let texture = Assets.get(`movie_${movie}`);
-        // let movieSprite = new Sprite(texture);
+        let texture = Assets.get(`movie_${movie}`);
+        let movieSprite = new Sprite(texture);
 
-        // this.addChild(movieSprite);
+        this.addChild(movieSprite);
 
-        // const controller = (movieSprite.texture as Texture<VideoResource>).baseTexture.resource.source;
-        // controller.play() //!!!
-        // controller.addEventListener("ended", () => {
-        //     setTimeout(() => {
-        //         fadingEffect(movieSprite, {
-        //             type: "to", alpha: 0, time: 1000, ease: "easeOutQuart" //???
-        //         });
-        //     }, 1500);
+        const controller = movieSprite.texture.source.resource.source;
+        controller.play() //!!!
+        controller.addEventListener("ended", () => {
+            setTimeout(() => {
+                fadingEffect(movieSprite, {
+                    type: "to", alpha: 0, time: 1000, ease: "easeOutQuart" //???
+                });
+            }, 1500);
 
-        //     setTimeout(() => {
-        //         this.removeChild(movieSprite);
-        //         this._onMovieEnded();
-        //     }, 2500);
-        // });
+            setTimeout(() => {
+                this.removeChild(movieSprite);
+                this._onMovieEnded();
+            }, 2500);
+        });
     }
 
 }

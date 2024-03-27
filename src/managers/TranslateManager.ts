@@ -1,11 +1,6 @@
 import type { EventViewer } from "../EventViewer";
-import type { TranslateData, TranslateReader } from "@/types/translate";
+import type { TranslateRecord, TranslateReader } from "@/types/translate";
 import { loadJson, loadCSVText } from "@/utils/loadJson";
-
-// enum translateState {
-//     ON = "translated",
-//     OFF = "jp",
-// }
 
 const ZhReader: TranslateReader = {
     name: "中文",
@@ -31,9 +26,8 @@ const ZhReader: TranslateReader = {
             return void 0;
         }
 
-        const data: TranslateData = {
-            url: "",
-            translater: "",
+        const data: TranslateRecord = {
+            translator: "",
             table: [],
         };
 
@@ -44,13 +38,13 @@ const ZhReader: TranslateReader = {
             if (columns[0] === "info") {
                 data["url"] = columns[1];
             } else if (columns[0] === "译者") {
-                data["translater"] = columns[1];
+                data["translator"] = columns[1];
             } else if (columns[0] != "") {
                 data["table"].push({
                     id: columns[0],
-                    name: columns[1],
+                    charName: columns[1],
                     text: columns[2].replace("\\n", "\r\n"),
-                    tran: columns[3].replace("\\n", "\r\n"),
+                    translatedText: columns[3].replace("\\n", "\r\n"),
                 });
             }
         });
@@ -62,9 +56,8 @@ const ZhReader: TranslateReader = {
 export class TranslateManager {
     protected viewer: EventViewer;
     protected readonly _readers: Map<string, TranslateReader> = new Map();
-    protected readonly _results: Map<string, TranslateData | undefined> =
+    protected readonly _results: Map<string, TranslateRecord | undefined> =
         new Map();
-    protected _current_language: string = "jp";
     protected _translate: boolean = false;
 
     constructor(viewer: EventViewer) {
@@ -73,20 +66,38 @@ export class TranslateManager {
     }
 
     addReader(reader: TranslateReader) {
+        if (this._readers.has(reader.language)) {
+            console.info('the reader for this language already exists')
+            return;
+        }
         this._readers.set(reader.language, reader);
     }
 
-    getReader(lang: string) {
-        return this._readers.get(lang);
+    getReader(language: string) {
+        return this._readers.get(language);
     }
 
-    async load(tag: string) {
+    addRecord(recordData: { language: string; record: TranslateRecord }) {
+        if (this._results.has(recordData.language)) {
+            console.info('the record for this language already exists')
+            return;
+        }
+        this._results.set(recordData.language, recordData.record);
+    }
+
+    getRecord(language: string) {
+        return this._results.get(language);
+    }
+
+    async load(label: string) {
         for (const [key, reader] of this._readers.entries()) {
-            try{
-                const data = await reader.read(tag);
+            try {
+                const data = await reader.read(label);
                 this._results.set(key, data);
-            }catch(e){
-                console.error('can not read the translate data of ' + key + ': ' + e);
+            } catch (e) {
+                console.error(
+                    "can not read the translate data of " + key + ": " + e
+                );
             }
         }
     }

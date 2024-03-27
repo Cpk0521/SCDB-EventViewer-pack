@@ -1,4 +1,4 @@
-import { Renderer, Application, Container } from "pixi.js";
+import { Renderer, Application, Container, Assets, Sprite, Texture } from "pixi.js";
 import { EventViewer, TranslateReader} from "../src";
 
 async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
@@ -15,9 +15,9 @@ async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
         width: 1136,
         height: 640,
         antialias: false,
-        hello: true,
+        hello: false,
     });
-
+    
     (globalThis as any).__PIXI_APP__ = app;
 
     app.canvas.setAttribute("id", "ShinyColors");
@@ -43,5 +43,17 @@ async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
 }
 
 const app = await createApp();
-const viewer = EventViewer.create();
-viewer.addTo(app.stage);
+const viewer = EventViewer.create().addTo(app.stage);
+
+
+
+
+// const touchToStart = Texture.from('./assets/touchToStart.png');
+// touchToStart.anchor.set(0.5);
+// touchToStart.position.set(568, 500);
+// touchToStart.zIndex = 10;
+// app.stage.addChild(touchToStart);
+
+
+// viewer.load('produce_events/202100711.json');
+

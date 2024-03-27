@@ -1,32 +1,35 @@
-import { BtnSetting } from "./setting";
+import { BtnSetting, FontSetting } from "./setting";
 
-export type TranslateData = {
-    url: string;
-    translater: string;
+export type TranslateRecord = {
+    url?: string;
+    translator: string;
     table: translateTable[];
 };
 
 export type translateTable = {
     id: string;
-    name: string;
+    charName: string;
     text?: string;
-    tran: string;
+    translatedText: string;
 };
 
-export type translateText = {
-    translated_text?: string;
-};
+// export type translateText = {
+//     translated_text?: string;
+// };
 
-export type TextRecord = {
-    jp: string;
-    translated: string;
-    [label: string]: string;
-};
+// export type TextRecord = {
+//     jp: string;
+//     translated: string;
+//     [label: string]: string;
+// };
 
 export interface TranslateReader {
+    asset? : {
+        switchBtn?: BtnSetting;
+        fonts? : FontSetting
+    }
     language: string;
     name?: string;
-    assets?: BtnSetting;
-    read: (tag: string) => Promise<TranslateData | undefined>;
+    read: (tag: string) => Promise<TranslateRecord | undefined>;
     test?(): Promise<any>;
 }

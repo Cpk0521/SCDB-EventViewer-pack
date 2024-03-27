@@ -106,7 +106,7 @@ export class SoundController {
         }
 
         this._currentVoice = Assets.get(`voice_${voiceName}`);
-        // console.log(this._currentVoice)
+        
         if (this._currentVoice) {
             let instance = this._currentVoice.play({
                 loop: false,
