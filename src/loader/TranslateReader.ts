@@ -3,13 +3,14 @@ import type { TranslateRecord, TranslateReader } from "@/types/translate";
 import { loadJson, loadCSVText } from "@/utils/loadJson";
 
 const ZhReader: TranslateReader = {
-    name: "中文",
+    // name: "中文",
     language: "zh",
-    async read(tag: string) {
-        const master_list =
-            "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/story.json";
-        const CSV_url =
-            "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/{uid}.csv";
+    masterListURL : "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/story.json",
+    CSVURL : "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/{uid}.csv",
+    async readByLabel(tag: string) {
+        tag = tag.includes('.json') ? tag : `${tag}.json`;
+        const master_list = this.masterListURL;
+        const CSV_url = this.CSVURL;
 
         let list = await loadJson<string[][]>(master_list);
         const result = list.find(([key, _]) => key === tag);
@@ -21,12 +22,18 @@ const ZhReader: TranslateReader = {
             "{uid}",
             result[1]
         );
-        let csvtext = await loadCSVText<string>(translateUrl);
+
+        return this.readByUrl(translateUrl);
+    },
+    async readByUrl(url: string) {
+
+        let csvtext = await loadCSVText<string>(url);
         if (csvtext === "") {
             return void 0;
         }
 
         const data: TranslateRecord = {
+            language : this.language,
             translator: "",
             table: [],
         };
@@ -36,7 +43,7 @@ const ZhReader: TranslateReader = {
             let columns = row.split(",");
 
             if (columns[0] === "info") {
-                data["url"] = columns[1];
+                data["info"] = columns[1];
             } else if (columns[0] === "译者") {
                 data["translator"] = columns[1];
             } else if (columns[0] != "") {
@@ -50,18 +57,15 @@ const ZhReader: TranslateReader = {
         });
 
         return data;
-    },
+    }
 };
 
-export class TranslateManager {
-    protected viewer: EventViewer;
+export class EventTranslateReader {
     protected readonly _readers: Map<string, TranslateReader> = new Map();
-    protected readonly _results: Map<string, TranslateRecord | undefined> =
-        new Map();
+    protected readonly _results: Map<string, TranslateRecord | undefined> = new Map();
     protected _translate: boolean = false;
 
-    constructor(viewer: EventViewer) {
-        this.viewer = viewer;
+    constructor() {
         this.addReader(ZhReader);
     }
 
@@ -71,6 +75,7 @@ export class TranslateManager {
             return;
         }
         this._readers.set(reader.language, reader);
+        return reader
     }
 
     getReader(language: string) {
@@ -83,6 +88,7 @@ export class TranslateManager {
             return;
         }
         this._results.set(recordData.language, recordData.record);
+        return recordData;
     }
 
     getRecord(language: string) {
@@ -92,7 +98,7 @@ export class TranslateManager {
     async load(label: string) {
         for (const [key, reader] of this._readers.entries()) {
             try {
-                const data = await reader.read(label);
+                const data = await reader.readByLabel(label);
                 this._results.set(key, data);
             } catch (e) {
                 console.error(

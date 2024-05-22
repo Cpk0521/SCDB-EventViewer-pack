@@ -2,7 +2,7 @@ import { Container, Sprite, Assets, Text } from "pixi.js";
 // import { IViewerOptions } from '@/types/setting'
 import type { TrackFrames } from "@/types/track";
 // import type { TextRecord } from "@/types/translate";
-import type { EventViewer } from "../EventViewer";
+import type { EventViewer } from "../../EventViewer";
 
 export class TextController extends Container {
 

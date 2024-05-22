@@ -1,10 +1,11 @@
 export function updateConfig<T>(target: T, source: Partial<T>): T {
-    for (const key in source) {       
+    for (const key in source) {
         if (source[key] instanceof Object && !Array.isArray(source[key])) {
             if(key in (target as object)){
                 target[key] = updateConfig(target[key], source[key]!);
             }
-        } else {
+        } 
+        else {
             (target as any)[key] = source[key];
         }
     }

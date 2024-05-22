@@ -1,9 +1,9 @@
 import { Container, Sprite, Assets, Text } from 'pixi.js';
 import { gsap } from 'gsap'
 import type { TrackFrames } from "@/types/track";
-import type { ViewerProps } from "@/types/setting";
+import type { ViewerProps } from "@/types/options";
 // import type { TextRecord } from "@/types/translate";
-import type { EventViewer } from "../EventViewer";
+import type { EventViewer } from "../../EventViewer";
 
 export class SelectController extends Container {
 

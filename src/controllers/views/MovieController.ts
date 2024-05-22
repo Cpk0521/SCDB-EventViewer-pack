@@ -1,7 +1,7 @@
 import { Container, Sprite, Assets, Texture,  } from 'pixi.js';
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
-import type { EventViewer } from "../EventViewer";
+import type { EventViewer } from "../../EventViewer";
 
 export class MovieController extends Container {
 

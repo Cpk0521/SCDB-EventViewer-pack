@@ -3,7 +3,7 @@
  * https://github.com/darwintree/sc-story-editor/tree/main/src/interfaces
  */
 
-// import type { translateText } from './translate'
+import { translateColumn } from "./translate";
 
 export type Optional<T> = {
     [P in keyof T]?: Optional<T[P]>;
@@ -143,4 +143,8 @@ export type TrackFrames = {
     Optional<Still> &
     Optional<Wait> ;
 
-// export type TrackFrames = FrameData & translateText;
+export type TrackFramesRecord = {
+    trackFrames : TrackFrames,
+    translation? : translateColumn,
+    prevStatus : Partial<Bg> //for seekTo
+}

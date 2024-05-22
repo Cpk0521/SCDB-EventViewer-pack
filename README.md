@@ -31,7 +31,5 @@ Via CDN
 ## Basic usage
 
 ```js
-
-
-
+    
 ```

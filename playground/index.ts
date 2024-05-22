@@ -1,5 +1,5 @@
-import { Renderer, Application, Container, Assets, Sprite, Texture } from "pixi.js";
-import { EventViewer, TranslateReader} from "../src";
+import { Renderer, Application } from "pixi.js";
+import { EventViewer, EventStorage } from "../src";
 
 async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
     if (document.getElementById("ShinyColors")) {
@@ -43,17 +43,15 @@ async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
 }
 
 const app = await createApp();
-const viewer = EventViewer.create().addTo(app.stage);
+// const viewer = EventViewer.create().addTo(app.stage);
+const viewer = new EventViewer({
+    stage : app.stage,
+})
 
+// const TLData = await EventStorage.loadTranslation('produce_events/202100711.json', 'zh');
+// const trackdata = await EventStorage.loadTrack('produce_events/202100711.json');
 
-
-
-// const touchToStart = Texture.from('./assets/touchToStart.png');
-// touchToStart.anchor.set(0.5);
-// touchToStart.position.set(568, 500);
-// touchToStart.zIndex = 10;
-// app.stage.addChild(touchToStart);
-
-
-// viewer.load('produce_events/202100711.json');
-
+// viewer.load({
+//     Track : trackdata,
+//     Translation : TLData,
+// });

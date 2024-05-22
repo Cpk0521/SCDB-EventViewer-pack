@@ -2,7 +2,8 @@ import { Container, Assets } from 'pixi.js';
 // import { Spine , EventTimeline, Event, TrackEntry} from '@pixi-spine/runtime-3.7'
 import { fadingEffect } from "@/utils/effect";
 import type { TrackFrames } from "@/types/track";
-import type { EventViewer } from "../EventViewer";
+import type { EventViewer } from "../../EventViewer";
+import { spineAlias } from '@/utils/spineAlias';
 
 type SpineRecord = {
     currCharId : string,

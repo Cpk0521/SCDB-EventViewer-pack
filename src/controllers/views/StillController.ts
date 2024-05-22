@@ -1,6 +1,6 @@
 import { Container, Sprite, Assets } from "pixi.js";
 import type { TrackFrames } from "@/types/track";
-import type { EventViewer } from "../EventViewer";
+import type { EventViewer } from "../../EventViewer";
 
 export class StillController extends Container {
 

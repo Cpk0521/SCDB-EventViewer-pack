@@ -8,6 +8,7 @@ export async function loadJson<T extends Object>(source : string) : Promise<T>{
             return response.json() as Promise<T>;
         })
 }
+
 export async function loadCSVText<T extends string>(source : string) : Promise<T>{
     return fetch(source)
         .then(response => {
