@@ -51,7 +51,7 @@ const viewer = new EventViewer({
 const trackdata = await EventStorage.loadTrack('produce_events/202100711.json');
 const TLData = await EventStorage.loadTranslate('produce_events/202100711.json', 'zh');
 
-// await viewer.play({
-//     Track : trackdata,
-//     Translation : TLData,
-// })
+await viewer.play({
+    Track : trackdata,
+    Translation : TLData,
+})

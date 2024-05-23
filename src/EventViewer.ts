@@ -26,6 +26,8 @@ import {
     TrackController,
 } from "@/controllers";
 import { EventStorage } from "./loader/EventStorage";
+import { LoadingComponent } from './ui/loadingUI'
+import { ToggleButton } from "./ui/ToggleButton";
 
 const Default_viewerOptions: ViewerProps = {
     skipBanner: false,
@@ -52,7 +54,7 @@ export class EventViewer extends Container {
     protected _options: ViewerProps = Default_viewerOptions;
     protected _inited?: Promise<any>;
     //UI
-    protected _UIComponent : Record<string, Container> = {};
+    protected _UIComponent : Record<string, any> = {};
     //Controller
     public bGController = new BGController(this, 1);
     public spineController = new SpineController(this, 2);
@@ -105,11 +107,27 @@ export class EventViewer extends Container {
             autoBtn_Off: this._options.assets.autoBtn.Off,
             translationBtn_On: this._options.assets.translationBtn.On,
             translationBtn_Off: this._options.assets.translationBtn.Off,
-            Error404 : './404.png'
         }
         require_assets[this._options.assets.font.family ?? "default_font"] = this._options.assets.font.filepath;
 
-        await EventStorage.addAssets(require_assets);        
+        await EventStorage.addAssets(require_assets);
+        
+        this._UIComponent['Loading'] = LoadingComponent.create().addTo(this);
+        this._UIComponent['autoBtn'] = ToggleButton
+            .create({
+                ON : Assets.get(this._options.assets.autoBtn.On),
+                OFF :Assets.get(this._options.assets.autoBtn.Off),
+            })
+            .setPosition(1075, 50)
+            .addTo(this);
+        this._UIComponent['translationBtn'] = ToggleButton
+            .create({
+                ON : Assets.get(this._options.assets.translationBtn.On),
+                OFF :Assets.get(this._options.assets.translationBtn.Off),
+            })
+            .setPosition(1075, 130)
+            .addTo(this);
+
     }
 
     public async play(props : LoadProps) {
@@ -178,10 +196,11 @@ export class EventViewer extends Container {
                     }
                 });
                 
-                await EventStorage.addAssets(resources);
+                await EventStorage.addAssets(resources, (N, P) => this._UIComponent["Loading"].componentUpdate(N, P));
 
                 resolve();
             } catch (e) {
+                console.error(e);
                 reject("load failed");
             }
         });
