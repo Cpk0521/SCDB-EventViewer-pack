@@ -1,4 +1,4 @@
-import { Renderer, Application } from "pixi.js";
+import { Renderer, Application, Assets } from "pixi.js";
 import { EventViewer, EventStorage } from "../src";
 
 async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
@@ -48,10 +48,10 @@ const viewer = new EventViewer({
     stage : app.stage,
 })
 
-// const TLData = await EventStorage.loadTranslation('produce_events/202100711.json', 'zh');
-// const trackdata = await EventStorage.loadTrack('produce_events/202100711.json');
+const trackdata = await EventStorage.loadTrack('produce_events/202100711.json');
+const TLData = await EventStorage.loadTranslate('produce_events/202100711.json', 'zh');
 
-// viewer.load({
+// await viewer.play({
 //     Track : trackdata,
 //     Translation : TLData,
-// });
+// })

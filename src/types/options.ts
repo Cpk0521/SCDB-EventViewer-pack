@@ -7,7 +7,7 @@ export type ViewerProps = {
     skipBanner: boolean;
     disableInfoLog: boolean;
     disableBlur: boolean;
-    resourceUrl: string;
+    // resourceUrl?: string;
     assets: {
         font: FontSetting;
         touchToStart: string;
@@ -48,3 +48,4 @@ export type LoadProps = {
     TranslateData? : TranslateRecord;
     urlResolver?: string;
 }
+

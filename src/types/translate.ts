@@ -25,4 +25,5 @@ export interface TranslateReader {
     masterListURL : string,
     readByLabel: (label: string) => Promise<TranslateRecord | undefined>;
     readByUrl: (url: string) => Promise<TranslateRecord | undefined>;
+    readByCSV: (csvText: string) => Promise<TranslateRecord | undefined>;
 }

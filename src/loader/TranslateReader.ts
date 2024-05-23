@@ -5,8 +5,8 @@ import { loadJson, loadCSVText } from "@/utils/loadJson";
 const ZhReader: TranslateReader = {
     // name: "中文",
     language: "zh",
-    masterListURL : "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/story.json",
-    CSVURL : "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/{uid}.csv",
+    masterListURL: "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/story.json",
+    CSVURL: "https://raw.githubusercontent.com/biuuu/ShinyColors/gh-pages/data/story/{uid}.csv",
     async readByLabel(tag: string) {
         tag = tag.includes('.json') ? tag : `${tag}.json`;
         const master_list = this.masterListURL;
@@ -32,13 +32,16 @@ const ZhReader: TranslateReader = {
             return void 0;
         }
 
+        return this.readByCSV(csvtext);
+    },
+    async readByCSV(csvText: string) {
         const data: TranslateRecord = {
-            language : this.language,
+            language: this.language,
             translator: "",
             table: [],
         };
 
-        let table = csvtext.split(/\r\n/).slice(1);
+        let table = csvText.split(/\r\n/).slice(1);
         table.forEach((row) => {
             let columns = row.split(",");
 
@@ -62,7 +65,7 @@ const ZhReader: TranslateReader = {
 
 export class EventTranslateReader {
     protected readonly _readers: Map<string, TranslateReader> = new Map();
-    protected readonly _results: Map<string, TranslateRecord | undefined> = new Map();
+    // protected readonly _results: Map<string, TranslateRecord | undefined> = new Map();
     protected _translate: boolean = false;
 
     constructor() {
@@ -82,29 +85,29 @@ export class EventTranslateReader {
         return this._readers.get(language);
     }
 
-    addRecord(recordData: { language: string; record: TranslateRecord }) {
-        if (this._results.has(recordData.language)) {
-            console.info('the record for this language already exists')
-            return;
-        }
-        this._results.set(recordData.language, recordData.record);
-        return recordData;
-    }
+    // addRecord(recordData: { language: string; record: TranslateRecord }) {
+    //     if (this._results.has(recordData.language)) {
+    //         console.info('the record for this language already exists')
+    //         return;
+    //     }
+    //     this._results.set(recordData.language, recordData.record);
+    //     return recordData;
+    // }
 
-    getRecord(language: string) {
-        return this._results.get(language);
-    }
+    // getRecord(language: string) {
+    //     return this._results.get(language);
+    // }
 
-    async load(label: string) {
-        for (const [key, reader] of this._readers.entries()) {
-            try {
-                const data = await reader.readByLabel(label);
-                this._results.set(key, data);
-            } catch (e) {
-                console.error(
-                    "can not read the translate data of " + key + ": " + e
-                );
-            }
-        }
-    }
+    // async load(label: string) {
+    //     for (const [key, reader] of this._readers.entries()) {
+    //         try {
+    //             const data = await reader.readByLabel(label);
+    //             this._results.set(key, data);
+    //         } catch (e) {
+    //             console.error(
+    //                 "can not read the translate data of " + key + ": " + e
+    //             );
+    //         }
+    //     }
+    // }
 }

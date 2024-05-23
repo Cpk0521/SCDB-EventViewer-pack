@@ -25,7 +25,7 @@ export class EventStorageClass {
         return await loadJson<TrackFrames[]>(url);
     }
 
-    public async loadTranslation(source : string, language : string) : Promise<TranslateRecord | undefined>{
+    public async loadTranslate(source : string, language : string) : Promise<TranslateRecord | undefined>{
         const reader = this.translateReader.getReader(language);
         if(!reader){
             console.warn(`Translation reader for ${language} is not found`);
@@ -34,15 +34,28 @@ export class EventStorageClass {
         return (isUrl(source) ? await reader.readByUrl(source) : await reader.readByLabel(source));
     }
 
-    public async loadAssets(assets: {[name : string] : string} = {}, callback? : (name : string, index : number)=>void){
+    public async loadTranslateCSV(csvText : string, language : string){
+        const reader = this.translateReader.getReader(language);
+        if(!reader){
+            console.warn(`Translation reader for ${language} is not found`);
+            return;
+        }
+        return await reader.readByCSV(csvText);
+    }
+
+    public async addAssets(assets: Record<string, string> = {}, callback? : (name : string, index : number, done : boolean)=>void){
         const list = Object.entries(assets);
-        const promises = list.map(([name, src], index) => {
-            callback?.(name, Math.floor(((index+1) / list.length) * 100) / 100);
-            return Assets.load({
+        let loadedindex = 1;
+        const promises = list.map(([name, src]) => {
+            return this.assets.load({
                 alias: name,
                 src: src,
             })
+            .then(()=>{
+                callback?.(name, Math.floor(((loadedindex++) / list.length) * 100) / 100, true);
+            })
             .catch((error)=>{
+                callback?.(name, Math.floor(((loadedindex++) / list.length) * 100) / 100, false);
                 //skip 404
                 if (error.message.includes(': 404')) {
                     return null;

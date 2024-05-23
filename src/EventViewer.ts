@@ -13,7 +13,6 @@ import { updateConfig, flatten } from "./utils/updateSetting";
 import { createEmptySprite } from "./utils/emptySprite";
 import { LoadProps, ViewerProps } from "@/types/options";
 import { TrackFrames, TrackFramesRecord } from "@/types/track";
-import { TranslateReader, TranslateRecord } from "@/types/translate";
 import {
     BGController,
     EffectController,
@@ -32,7 +31,6 @@ const Default_viewerOptions: ViewerProps = {
     skipBanner: false,
     disableInfoLog: false,
     disableBlur: false,
-    resourceUrl: "https://viewer.shinycolors.moe",
     assets: {
         font: {
             filepath: "./assets/TsunagiGothic.ttf",
@@ -53,6 +51,8 @@ const Default_viewerOptions: ViewerProps = {
 export class EventViewer extends Container {
     protected _options: ViewerProps = Default_viewerOptions;
     protected _inited?: Promise<any>;
+    //UI
+    protected _UIComponent : Record<string, Container> = {};
     //Controller
     public bGController = new BGController(this, 1);
     public spineController = new SpineController(this, 2);
@@ -63,7 +63,6 @@ export class EventViewer extends Container {
     public effectController = new EffectController(this, 7);
     public movieController = new MovieController(this, 8);
     public soundController = new SoundController(this);
-    //Track
     public trackController = new TrackController(this);
 
     constructor(options?: Partial<ViewerProps>) {
@@ -100,28 +99,88 @@ export class EventViewer extends Container {
     public async clear() {}
 
     protected async _init() {   
-        const require_assets : {[key : string] : string} = {
+        const require_assets : Record<string, string> = {
             touchToStart: this._options.assets.touchToStart,
             autoBtn_On: this._options.assets.autoBtn.On,
             autoBtn_Off: this._options.assets.autoBtn.Off,
             translationBtn_On: this._options.assets.translationBtn.On,
             translationBtn_Off: this._options.assets.translationBtn.Off,
-            Reeor : './assets/Reeor.png',
+            Error404 : './404.png'
         }
-        require_assets[this.Options.assets.font.family ?? "default_font"] = this.Options.assets.font.filepath;
+        require_assets[this._options.assets.font.family ?? "default_font"] = this._options.assets.font.filepath;
 
-        await EventStorage.loadAssets(require_assets);        
+        await EventStorage.addAssets(require_assets);        
     }
 
-    public async load(props : LoadProps) {
+    public async play(props : LoadProps) {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 //load Font & setting assets
                 await this._inited;
-                //load track
-                
 
+                // get urlResolver to get the assets url
+                const resolver = EventStorage.UrlResolver.getResolver(props.urlResolver ?? 'default')
+                if (!resolver) {
+                    throw new Error("UrlResolver not found");
+                }
+
+                //load track
+                let resources : Record<string, string> = {}
+                props.Track.forEach((Frame : TrackFrames) => {
+                    const { 
+                        speaker, text, select, textFrame,
+                        bg, fg, se, voice, bgm, 
+                        movie, charId, charType, charLabel, charCategory, 
+                        stillType, stillId, still} = Frame;
+                        
+                    // if (speaker && text && !this._mixed && this._translationData) {
+                    //     Frame['translated_text'] = this._translationData.table.find(data => data.name == speaker && data.text == text)!['tran'];
+                    // }
+                    if (textFrame && textFrame != "off" && !resources[`textFrame_${textFrame}`]) {
+                        resources[`textFrame_${textFrame}`] = resolver.textFrame(textFrame);
+                    }
+                    if (bg && !resources[`bg_${bg}`] && bg != "fade_out") {
+                        resources[`bg_${bg}`] = resolver.bg(bg);
+                    }
+                    if (fg && !resources[`fg_${fg}`] && fg != "off" && fg != "fade_out") {
+                        resources[`fg_${fg}`] = resolver.fg(fg);
+                    }
+                    if (se && !resources[`se_${se}`]) {
+                        resources[`se_${se}`] = resolver.se(se);
+                    }
+                    if (voice && !resources[`voice_${voice}`]) {
+                        resources[`voice_${voice}`] = resolver.voice(voice);
+                    }
+                    if (bgm && !resources[`bgm_${bgm}`] && bgm != "fade_out" && bgm != "off") {
+                        resources[`bgm_${bgm}`] = resolver.bgm(bgm);
+                    }
+                    if (movie && !resources[`movie_${movie}`]) {
+                        resources[`movie_${movie}`] = resolver.movie(movie);
+                    }
+                    if (charLabel && charId) {
+                        const thisCharCategory = charCategory ? spineAlias[charCategory!] : "stand";
+                        if (!resources[`${charLabel}_${charId}_${thisCharCategory}`]) {
+                            resources[`${charLabel}_${charId}_${thisCharCategory}`] = resolver.spine(charType!, thisCharCategory, charId);
+                        }
+                    }
+                    if (select && !resources[`selectFrame_${this.selectController.neededFrame}`]) {
+                        resources[`selectFrame_${this.selectController.neededFrame}`] = resolver.neededFrame(`${this.selectController.neededFrame}`);
+                        this.selectController.frameForward();
+                        // if (!this._mixed && this._translationData) {
+                        //     Frame['translated_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
+                        // }
+                    }
+                    if (still && !resources[`still_${still}`] && still != "off") {
+                        resources[`still_${still}`] = resolver.still(still);
+                    }
+                    if (stillType && stillId && !resources[`still_${stillType}${stillId}`]) {
+                        resources[`still_${stillType}${stillId}`] = resolver.cardstill(stillType, stillId);
+                    }
+                });
                 
+                await EventStorage.addAssets(resources);
+
+                resolve();
             } catch (e) {
                 reject("load failed");
             }
@@ -129,7 +188,7 @@ export class EventViewer extends Container {
     }
 
     protected _onready() {
-        const touchToStart = Sprite.from("./assets/touchToStart.png");
+        const touchToStart = Sprite.from("touchToStart");
         touchToStart.anchor.set(0.5);
         touchToStart.position.set(568, 500);
         touchToStart.zIndex = 10;
