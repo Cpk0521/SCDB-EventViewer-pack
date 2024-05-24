@@ -1,4 +1,4 @@
-import { Resolver } from "../types/options";
+import { Resolver } from "../types/helper";
 import { updateConfig } from "../utils/updateSetting";
 
 const Default_Resolver : Resolver = {
@@ -37,21 +37,21 @@ const Default_Resolver : Resolver = {
     still: function (still: string): string {
         return `${this.resourceUrl}/images/event/still/${still}.jpg`;
     },
-    cardstill: function (stillType: string, stillId: string): string {
+    stillWithType: function (stillType: string, stillId: string): string {
         return `${this.resourceUrl}/images/content/${stillType}/card/${stillId}.jpg`;
     }
 }
 
-export class EventUrlResolver {
-    private readonly resolvers: Map<string, Resolver> = new Map([
+export abstract class EventUrlResolver {
+    public static readonly resolvers: Map<string, Resolver> = new Map([
         [Default_Resolver.name, Default_Resolver]
     ]);
 
-    addResolver(resolver : Partial<Resolver>&{name: string}) : void {
+    public static addResolver(resolver : Partial<Resolver>&{name: string}) : void {
         this.resolvers.set(resolver.name, updateConfig({...Default_Resolver}, resolver));
     }
 
-    getResolver(name: string): Resolver | undefined {
+    public static getResolver(name: string): Resolver | undefined {
         return this.resolvers.get(name);
     }
 }

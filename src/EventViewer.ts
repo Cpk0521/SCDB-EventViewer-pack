@@ -8,10 +8,10 @@ import {
 import "@pixi/sound";
 // import '@pixi-spine/loader-uni'
 import { spineAlias } from "@/utils/spineAlias";
-import { Banner, TrackLog } from "./utils/log";
-import { updateConfig, flatten } from "./utils/updateSetting";
-import { createEmptySprite } from "./utils/emptySprite";
-import { LoadProps, ViewerProps } from "@/types/options";
+import { Banner, TrackLog } from "@/utils/log";
+import { updateConfig, flatten } from "@/utils/updateSetting";
+import { createEmptySprite } from "@/utils/emptySprite";
+import { StoryProps, ViewerProps } from "@/types/options";
 import { TrackFrames, TrackFramesRecord } from "@/types/track";
 import {
     BGController,
@@ -25,9 +25,9 @@ import {
     SoundController,
     TrackController,
 } from "@/controllers";
-import { EventStorage } from "./loader/EventStorage";
-import { LoadingComponent } from './ui/loadingUI'
-import { ToggleButton } from "./ui/ToggleButton";
+import { LoadingComponent } from '@/ui/loadingUI'
+import { ToggleButton } from "@/ui/ToggleButton";
+import { EventStorage } from "@/helper/EventStorage";
 
 const Default_viewerOptions: ViewerProps = {
     skipBanner: false,
@@ -85,6 +85,7 @@ export class EventViewer extends Container {
         this.addChild(createEmptySprite({ color: 0x000000 }));
         this.sortableChildren = true;
         this.eventMode = "static";
+        this.on('pointertap', this._tap, this);
         globalThis.addEventListener("blur", this._onBlur.bind(this));
         this._inited = this._init();
     }
@@ -113,6 +114,7 @@ export class EventViewer extends Container {
         await EventStorage.addAssets(require_assets);
         
         this._UIComponent['Loading'] = LoadingComponent.create().addTo(this);
+
         this._UIComponent['autoBtn'] = ToggleButton
             .create({
                 ON : Assets.get(this._options.assets.autoBtn.On),
@@ -120,6 +122,8 @@ export class EventViewer extends Container {
             })
             .setPosition(1075, 50)
             .addTo(this);
+        this._UIComponent['autoBtn'].on('Btnclicked', this._toggleAutoplay)
+
         this._UIComponent['translationBtn'] = ToggleButton
             .create({
                 ON : Assets.get(this._options.assets.translationBtn.On),
@@ -127,83 +131,29 @@ export class EventViewer extends Container {
             })
             .setPosition(1075, 130)
             .addTo(this);
+            this._UIComponent['translationBtn'].on('Btnclicked', this._toggleLangBtn)
 
     }
 
-    public async play(props : LoadProps) {
+    public async play(props : StoryProps) {
         return new Promise<void>(async (resolve, reject) => {
             try {
                 //load Font & setting assets
                 await this._inited;
 
-                // get urlResolver to get the assets url
-                const resolver = EventStorage.UrlResolver.getResolver(props.urlResolver ?? 'default')
-                if (!resolver) {
-                    throw new Error("UrlResolver not found");
-                }
-
                 //load track
-                let resources : Record<string, string> = {}
-                props.Track.forEach((Frame : TrackFrames) => {
-                    const { 
-                        speaker, text, select, textFrame,
-                        bg, fg, se, voice, bgm, 
-                        movie, charId, charType, charLabel, charCategory, 
-                        stillType, stillId, still} = Frame;
-                        
-                    // if (speaker && text && !this._mixed && this._translationData) {
-                    //     Frame['translated_text'] = this._translationData.table.find(data => data.name == speaker && data.text == text)!['tran'];
-                    // }
-                    if (textFrame && textFrame != "off" && !resources[`textFrame_${textFrame}`]) {
-                        resources[`textFrame_${textFrame}`] = resolver.textFrame(textFrame);
-                    }
-                    if (bg && !resources[`bg_${bg}`] && bg != "fade_out") {
-                        resources[`bg_${bg}`] = resolver.bg(bg);
-                    }
-                    if (fg && !resources[`fg_${fg}`] && fg != "off" && fg != "fade_out") {
-                        resources[`fg_${fg}`] = resolver.fg(fg);
-                    }
-                    if (se && !resources[`se_${se}`]) {
-                        resources[`se_${se}`] = resolver.se(se);
-                    }
-                    if (voice && !resources[`voice_${voice}`]) {
-                        resources[`voice_${voice}`] = resolver.voice(voice);
-                    }
-                    if (bgm && !resources[`bgm_${bgm}`] && bgm != "fade_out" && bgm != "off") {
-                        resources[`bgm_${bgm}`] = resolver.bgm(bgm);
-                    }
-                    if (movie && !resources[`movie_${movie}`]) {
-                        resources[`movie_${movie}`] = resolver.movie(movie);
-                    }
-                    if (charLabel && charId) {
-                        const thisCharCategory = charCategory ? spineAlias[charCategory!] : "stand";
-                        if (!resources[`${charLabel}_${charId}_${thisCharCategory}`]) {
-                            resources[`${charLabel}_${charId}_${thisCharCategory}`] = resolver.spine(charType!, thisCharCategory, charId);
-                        }
-                    }
-                    if (select && !resources[`selectFrame_${this.selectController.neededFrame}`]) {
-                        resources[`selectFrame_${this.selectController.neededFrame}`] = resolver.neededFrame(`${this.selectController.neededFrame}`);
-                        this.selectController.frameForward();
-                        // if (!this._mixed && this._translationData) {
-                        //     Frame['translated_text'] = this._translationData.table.find(data => data.id == 'select' && data.text == select)!['tran'];
-                        // }
-                    }
-                    if (still && !resources[`still_${still}`] && still != "off") {
-                        resources[`still_${still}`] = resolver.still(still);
-                    }
-                    if (stillType && stillId && !resources[`still_${stillType}${stillId}`]) {
-                        resources[`still_${stillType}${stillId}`] = resolver.cardstill(stillType, stillId);
-                    }
-                });
+                const cache = this.trackController.init(props);
+                await EventStorage.addAssets(flatten(cache), (N, P) => this._UIComponent["Loading"].progress(N, P));
                 
-                await EventStorage.addAssets(resources, (N, P) => this._UIComponent["Loading"].componentUpdate(N, P));
 
                 resolve();
             } catch (e) {
                 console.error(e);
                 reject("load failed");
             }
-        });
+        }).then(() => {
+            this._onready();
+        })
     }
 
     protected _onready() {
@@ -214,34 +164,39 @@ export class EventViewer extends Container {
         this.addChild(touchToStart);
         this.cursor = "pointer";
 
-        const _play = () => {
+        this.once("pointertap", ()=>{
             this.removeChild(touchToStart);
             touchToStart.destroy();
             this.cursor = "default";
-            this._renderTrack();
-        };
-        this.once("pointertap", _play, this);
+            // this._renderTrack();
+            this.trackController.renderTrack();
+        }, this);
     }
 
-    public seek(index : number){}
+    public seek(index : number){
 
-    protected _renderTrack() {}
+    }
 
-    protected _toggleAutoplay() {}
+    protected _toggleAutoplay(bool : boolean) {
+        console.log('autoBtn', bool);
+    }
 
-    protected _toggleLangBtn() {}
+    protected _toggleLangBtn(bool : boolean) {
+        console.log('LangBtn', bool);
+    }
 
-    protected _forward() {}
+    protected _tap(e: FederatedPointerEvent) {
+        if (e.target !== this) {
+            return;
+        }
+        console.log('click')
+    }
 
-    protected _jumpTo(nextLabel: string) {}
-
-    protected _endOfEvent() {}
-
-    protected _afterSelection() {}
-
-    protected _tapEffect(event: FederatedPointerEvent) {}
-
-    protected _onBlur() {}
+    protected _onBlur() {
+        if(document.hidden){
+            console.log('Blur')
+        }
+    }
 
     get Options() {
         return this._options;

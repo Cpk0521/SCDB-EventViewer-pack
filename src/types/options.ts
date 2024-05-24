@@ -26,26 +26,8 @@ export type BtnSetting = {
     Off: string;
 };
 
-export type Resolver = { //parser
-    name : string;
-    resourceUrl: string;
-    story(label : string) :string;
-    textFrame(label : string) : string;
-    bg(label : string) : string;
-    fg(label : string) : string;
-    voice(label : string) : string;
-    se(label : string) : string;
-    bgm(label : string) : string;
-    movie(label : string) : string;
-    spine(charType:string, thisCharCategory:string, charId:string) : string;
-    neededFrame(label : string) : string;
-    still(label : string) : string;
-    cardstill(stillType : string, stillId:string) : string;
-}
-
-export type LoadProps = {
+export type StoryProps = {
     Track : TrackFrames[];
     TranslateData? : TranslateRecord;
     urlResolver?: string;
 }
-

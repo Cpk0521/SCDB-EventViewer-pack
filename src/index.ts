@@ -13,5 +13,5 @@ export * from "./utils/loadJson";
 export * from "./utils/updateSetting";
 export * from "./utils/spineAlias";
 
-export * from "./loader/EventStorage";
-export * from "./loader/TranslateReader";
+export * from "./helper/EventHelper";
+export * from "./helper/TranslateReader";

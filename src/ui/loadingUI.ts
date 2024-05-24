@@ -43,8 +43,8 @@ export class LoadingComponent extends Container {
         return this;
     }
 
-   public componentUpdate(assetName : string, progress : number){
-        this._percent_text.text = `${progress * 100} %`;
+   public progress(assetName : string, progressNum : number){
+        this._percent_text.text = `${progressNum * 100} %`;
         
         this._loglist.push(assetName);
         if(this._loglist.length > 5){
@@ -53,7 +53,7 @@ export class LoadingComponent extends Container {
 
         this._logText.text = this._loglist.join('\n');
 
-        if(progress === 1){
+        if(progressNum === 1){
             this._done();
         }
     }

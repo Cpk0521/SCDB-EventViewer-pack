@@ -3,6 +3,7 @@ import { Container, Sprite, Texture } from "pixi.js";
 type ButtonProps = {
     ON : Texture,
     OFF : Texture
+    visible? : boolean, // default true
 }
 
 export class ToggleButton extends Sprite {
@@ -10,7 +11,7 @@ export class ToggleButton extends Sprite {
     protected _btnTexture : ButtonProps
 
     constructor(options: ButtonProps) {
-        super(options?.OFF);
+        super(options.OFF);
 
         this._btnTexture = options;
         this.anchor.set(0.5);
@@ -31,8 +32,7 @@ export class ToggleButton extends Sprite {
     public click(){
         this._isOn = !this._isOn;
         this.texture = this._isOn ? this._btnTexture.ON : this._btnTexture.OFF;
-        console.log('click');
-        this.emit('clicked');
+        this.emit('Btnclicked', this._isOn);
     }
 
     public setPosition(x: number, y: number){

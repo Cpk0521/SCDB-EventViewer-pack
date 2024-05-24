@@ -13,17 +13,3 @@ export type translateColumn = {
     text?: string;
     translatedText: string;
 };
-
-export interface TranslateReader {
-    name?: string;
-    asset? : {
-        switchBtn?: BtnSetting;
-        fonts? : FontSetting
-    }
-    language: string;
-    CSVURL : string;
-    masterListURL : string,
-    readByLabel: (label: string) => Promise<TranslateRecord | undefined>;
-    readByUrl: (url: string) => Promise<TranslateRecord | undefined>;
-    readByCSV: (csvText: string) => Promise<TranslateRecord | undefined>;
-}

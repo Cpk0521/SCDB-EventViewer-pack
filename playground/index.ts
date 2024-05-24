@@ -1,5 +1,5 @@
-import { Renderer, Application, Assets } from "pixi.js";
-import { EventViewer, EventStorage } from "../src";
+import { Renderer, Application } from "pixi.js";
+import { EventViewer, EventHelper, TranslateReader } from "../src";
 
 async function createApp(preference: "webgl" | "webgpu" = "webgpu") {
     if (document.getElementById("ShinyColors")) {
@@ -48,8 +48,16 @@ const viewer = new EventViewer({
     stage : app.stage,
 })
 
-const trackdata = await EventStorage.loadTrack('produce_events/202100711.json');
-const TLData = await EventStorage.loadTranslate('produce_events/202100711.json', 'zh');
+// const ENReader = {
+//     language: "en",
+//     masterListURL: "https://raw.githubusercontent.com/snowyivu/ShinyColors/gh-pages/story.json",
+//     CSVURL: "https://raw.githubusercontent.com/snowyivu/ShinyColors/gh-pages/{uid}",
+// }
+// EventHelper.translateReader.addReader(ENReader)
+
+const trackdata = await EventHelper.loadTrack('produce_events/202100711.json');
+// const TLData_EN = await EventHelper.loadTranslate('produce_events/202100711.json', 'en');
+const TLData = await EventHelper.loadTranslate('produce_events/202100711.json', 'zh');
 
 await viewer.play({
     Track : trackdata,

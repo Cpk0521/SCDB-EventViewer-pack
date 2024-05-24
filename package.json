@@ -43,5 +43,8 @@
   },
   "peerDependencies": {
     "pixi.js": "^8.0.0"
+  },
+  "dependencies": {
+    "csvjson-csv2json": "^5.0.6"
   }
 }
